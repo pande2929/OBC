@@ -1,0 +1,11 @@
+## Interface: 110200
+## Title: OBC
+## Author: Pande
+## Version 0.1
+
+core.lua
+utils.lua
+events.lua
+ui.lua
+
+## SavedVariables: OBCDB

@@ -32,9 +32,24 @@ local function UpdateHighlightFrame()
 		OBCDB.settings.offsetX,
 		OBCDB.settings.offsetY
 	)
+
+    ns.highlightFrame:SetBackdropBorderColor(1, 1, 1)
+
+    --[[
+    ns.highlightFrame:SetBackdrop({
+        bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background",
+        edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+        tile = true, tileSize = 16, edgeSize = 16,
+        insets = { left = 4, right = 4, top = 4, bottom = 4 }
+    })
+    ns.highlightFrame:SetBackdropBorderColor(1, 0, 0)  -- red border
+    ns.highlightFrame:SetBackdropColor(0, 0, 0, 0.8)   -- dark background
+    ]]
 	
-	ns.highlightFrame.tex:SetAllPoints(ns.highlightFrame)
-    --ns.highlightFrame.tex:SetSize(OBCDB.settings.sizeX + 40, OBCDB.settings.sizeY + 40)
+	--ns.highlightFrame.tex:SetAllPoints(ns.highlightFrame)
+    ns.highlightFrame.tex:SetPoint("TOPLEFT", ns.highlightFrame, "TOPLEFT", 2, -2)
+    ns.highlightFrame.tex:SetPoint("BOTTOMRIGHT", ns.highlightFrame, "BOTTOMRIGHT", -2, 2)
+    ns.highlightFrame.tex:SetTexCoord(0.06, 0.94, 0.06, 0.94)
 
 	-- Set Text
 	ns.highlightFrame.highlightText:SetFont(ns.highlightFrame.highlightText:GetFont(), OBCDB.settings.fontSize, "OUTLINE")
@@ -52,10 +67,22 @@ end
 -- Function: Creates the main frame.
 ------------------------------------------------------------
 function ns:CreateHighlightFrame()
+    local backdropInfo =
+    {
+        bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
+        edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+        tile = true,
+        tileEdge = true,
+        tileSize = 8,
+        edgeSize = 8,
+        insets = { left = 1, right = 1, top = 1, bottom = 1 },
+    }
+
     -- Create the frame
-    ns.highlightFrame = CreateFrame("Frame", nil, UIParent, "InsetFrameTemplate")
+    ns.highlightFrame = CreateFrame("Frame", nil, UIParent, "BackdropTemplate")
 	ns.highlightFrame.highlightText = ns.highlightFrame:CreateFontString(nil, "OVERLAY", "NumberFontNormal")
     ns.highlightFrame.tex = ns.highlightFrame:CreateTexture()
+    ns.highlightFrame:SetBackdrop(backdropInfo)
 
     UpdateHighlightFrame()
 end
@@ -451,7 +478,7 @@ function ns:CreateSettingsFrame()
         local setting = Settings.RegisterAddOnSetting(category, variable, variableKey, variableTbl, type(defaultValue), name, defaultValue)
         setting:SetValueChangedCallback(ns.OnSettingChanged)
 
-        local tooltip = "This is a tooltip for the checkbox."
+        local tooltip = "Show or hide the primary action bar. Useful if since Blizzard's assisted highlight doesn't use actions on disabled bars."
         Settings.CreateCheckbox(category, setting, tooltip)
     end
     
@@ -466,7 +493,7 @@ function ns:CreateSettingsFrame()
         local setting = Settings.RegisterAddOnSetting(category, variable, variableKey, variableTbl, type(defaultValue), name, defaultValue)
         setting:SetValueChangedCallback(ns.OnSettingChanged)
 
-        local tooltip = "This is a tooltip for the checkbox."
+        local tooltip = "Show or hide Action Bar 2. Useful if since Blizzard's assisted highlight doesn't use actions on disabled bars."
         Settings.CreateCheckbox(category, setting, tooltip)
     end
     
@@ -481,7 +508,7 @@ function ns:CreateSettingsFrame()
         local setting = Settings.RegisterAddOnSetting(category, variable, variableKey, variableTbl, type(defaultValue), name, defaultValue)
         setting:SetValueChangedCallback(ns.OnSettingChanged)
 
-        local tooltip = "This is a tooltip for the checkbox."
+        local tooltip = "Show or hide the Action Bar 3. Useful if since Blizzard's assisted highlight doesn't use actions on disabled bars."
         Settings.CreateCheckbox(category, setting, tooltip)
     end
 end

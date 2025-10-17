@@ -33,7 +33,7 @@ local function UpdateHighlightFrame()
 		OBCDB.settings.offsetY
 	)
 
-    ns.highlightFrame:SetBackdropBorderColor(1, 1, 1)
+    ns.highlightFrame:SetBackdropBorderColor(0.1, 0.1, 0.1)
 
     --[[
     ns.highlightFrame:SetBackdrop({

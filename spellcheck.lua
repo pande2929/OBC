@@ -24,5 +24,7 @@ local ticket = C_Timer.NewTicker(0.1, function()
     -- Apply the red shift
     if inRange ~= nil then
         ns:ApplyRedShift(not inRange)
+    else
+        ns:ApplyRedShift(false)
     end
 end)

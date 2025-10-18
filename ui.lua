@@ -1,31 +1,38 @@
 -- ui.lua
 
 local ns = OBC
+local highlightFrame = nil
 
 ------------------------------------------------------------
--- Function: Show a cooldown animation.
+-- Function: Show/hide the dimming overlay
 ------------------------------------------------------------
-function ns:ShowCooldownAnimation(startTime, duration)
-	-- Clear existing animation
-	ns.highlightFrame.cooldown:SetCooldown(0, 0)
-	
-	-- test for nil, but also only do the animation if the duration isn't 0
-	if startTime and duration and duration > 0 then
-		ns.highlightFrame.cooldown:SetCooldown(startTime, duration)
-	end
+local function ApplyDimEffect(dim)
+    local frame = highlightFrame
+
+    if not frame.DimOverlay then
+        local tex = frame:CreateTexture(nil, "OVERLAY")
+        tex:SetAllPoints()
+        tex:SetColorTexture(0, 0, 0, 0.5)
+        frame.DimOverlay = tex
+    end
+    if dim then
+        frame.DimOverlay:Show()
+    else
+        frame.DimOverlay:Hide()
+    end
 end
 
 ------------------------------------------------------------
 -- Function: Updates the main frame.
 ------------------------------------------------------------
-local function UpdateHighlightFrame()
+local function RedrawHighlightFrame()
     -- Reset positioning.
-	ns.highlightFrame:ClearAllPoints()
-    ns.highlightFrame.tex:ClearAllPoints()
-	ns.highlightFrame.highlightText:ClearAllPoints()
+	highlightFrame:ClearAllPoints()
+    highlightFrame.tex:ClearAllPoints()
+	highlightFrame.highlightText:ClearAllPoints()
 
-	ns.highlightFrame:SetSize(OBCDB.settings.sizeX, OBCDB.settings.sizeY)
-	ns.highlightFrame:SetPoint(
+	highlightFrame:SetSize(OBCDB.settings.sizeX, OBCDB.settings.sizeY)
+	highlightFrame:SetPoint(
 		OBCDB.settings.point,
 		UIParent,
 		OBCDB.settings.point,
@@ -33,40 +40,29 @@ local function UpdateHighlightFrame()
 		OBCDB.settings.offsetY
 	)
 
-    ns.highlightFrame:SetBackdropBorderColor(0.1, 0.1, 0.1)
-
-    --[[
-    ns.highlightFrame:SetBackdrop({
-        bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background",
-        edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
-        tile = true, tileSize = 16, edgeSize = 16,
-        insets = { left = 4, right = 4, top = 4, bottom = 4 }
-    })
-    ns.highlightFrame:SetBackdropBorderColor(1, 0, 0)  -- red border
-    ns.highlightFrame:SetBackdropColor(0, 0, 0, 0.8)   -- dark background
-    ]]
+    highlightFrame:SetBackdropBorderColor(0.1, 0.1, 0.1)
 	
-	--ns.highlightFrame.tex:SetAllPoints(ns.highlightFrame)
-    ns.highlightFrame.tex:SetPoint("TOPLEFT", ns.highlightFrame, "TOPLEFT", 2, -2)
-    ns.highlightFrame.tex:SetPoint("BOTTOMRIGHT", ns.highlightFrame, "BOTTOMRIGHT", -2, 2)
-    ns.highlightFrame.tex:SetTexCoord(0.06, 0.94, 0.06, 0.94)
+	--highlightFrame.tex:SetAllPoints(highlightFrame)
+    highlightFrame.tex:SetPoint("TOPLEFT", highlightFrame, "TOPLEFT", 2, -2)
+    highlightFrame.tex:SetPoint("BOTTOMRIGHT", highlightFrame, "BOTTOMRIGHT", -2, 2)
+    highlightFrame.tex:SetTexCoord(0.06, 0.94, 0.06, 0.94)
 
 	-- Set Text
-	ns.highlightFrame.highlightText:SetFont(ns.highlightFrame.highlightText:GetFont(), OBCDB.settings.fontSize, "OUTLINE")
-	ns.highlightFrame.highlightText:SetPoint(
+	highlightFrame.highlightText:SetFont(highlightFrame.highlightText:GetFont(), OBCDB.settings.fontSize, "OUTLINE")
+	highlightFrame.highlightText:SetPoint(
 		OBCDB.settings.textPoint,
-		ns.highlightFrame,
+		highlightFrame,
 		OBCDB.settings.textPoint,
 		OBCDB.settings.textOffsetX,
 		OBCDB.settings.textOffsetY
 	)
-	ns.highlightFrame.highlightText:SetTextColor(1, 1, 1, 1)
+	highlightFrame.highlightText:SetTextColor(1, 1, 1, 1)
 end
 
 ------------------------------------------------------------
 -- Function: Creates the main frame.
 ------------------------------------------------------------
-function ns:CreateHighlightFrame()
+local function CreateHighlightFrame()
     local backdropInfo =
     {
         bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
@@ -79,26 +75,27 @@ function ns:CreateHighlightFrame()
     }
 
     -- Create the frame
-    ns.highlightFrame = CreateFrame("Frame", nil, UIParent, "BackdropTemplate")
-	ns.highlightFrame.highlightText = ns.highlightFrame:CreateFontString(nil, "OVERLAY", "NumberFontNormal")
-    ns.highlightFrame.tex = ns.highlightFrame:CreateTexture()
-    ns.highlightFrame:SetBackdrop(backdropInfo)
+    highlightFrame = CreateFrame("Frame", nil, UIParent, "BackdropTemplate")
 
-    UpdateHighlightFrame()
-end
+    -- Text
+	highlightFrame.highlightText = highlightFrame:CreateFontString(nil, "OVERLAY", "NumberFontNormal")
+    
+    -- Texture
+    highlightFrame.tex = highlightFrame:CreateTexture()
+    highlightFrame:SetBackdrop(backdropInfo)
 
-------------------------------------------------------------
--- Function: Refreshes the UI.
-------------------------------------------------------------
-function ns:RefreshUI()
-    UpdateHighlightFrame()
-    ns:UpdateActionBars()
+    -- Cooldown overlay
+    highlightFrame.cooldown = CreateFrame("Cooldown", "$parentCooldown", highlightFrame, "CooldownFrameTemplate")
+    highlightFrame.cooldown:SetPoint("TOPLEFT", highlightFrame, "TOPLEFT", 2, -2)
+    highlightFrame.cooldown:SetPoint("BOTTOMRIGHT", highlightFrame, "BOTTOMRIGHT", -2, 2)
+
+    RedrawHighlightFrame()
 end
 
 ------------------------------------------------------------
 -- Function: Show/hide action bars
 ------------------------------------------------------------
-function ns:UpdateActionBars()
+local function UpdateActionBars()
     --[[
     /run local bar = MainMenuBar if bar:GetAlpha() == 0 then bar:SetAlpha(1) else bar:SetAlpha(0) end
     /run local bar = MultiBarBottomLeft if bar:GetAlpha() == 0 then bar:SetAlpha(1) else bar:SetAlpha(0) end
@@ -131,17 +128,9 @@ function ns:UpdateActionBars()
 end
 
 ------------------------------------------------------------
--- Function: Show a cooldown animation.
-------------------------------------------------------------
-function ns:CreateCooldownOverlay()
-    ns.highlightFrame.cooldown = CreateFrame("Cooldown", "$parentCooldown", ns.highlightFrame, "CooldownFrameTemplate")
-	ns.highlightFrame.cooldown:SetAllPoints(ns.highlightFrame) -- Fill the button
-end
-
-------------------------------------------------------------
 -- Function: Create the settings frame.
 ------------------------------------------------------------
-function ns:CreateSettingsFrame()
+local function CreateSettingsFrame()
 	local category = Settings.RegisterVerticalLayoutCategory(ns.name)
 
 	-- Anchor Point
@@ -511,4 +500,42 @@ function ns:CreateSettingsFrame()
         local tooltip = "Show or hide the Action Bar 3. Useful if since Blizzard's assisted highlight doesn't use actions on disabled bars."
         Settings.CreateCheckbox(category, setting, tooltip)
     end
+end
+
+------------------------------------------------------------
+-- Function: Show a cooldown animation.
+------------------------------------------------------------
+function ns:ShowCooldownAnimation(startTime, duration)
+	-- Clear existing animation
+	highlightFrame.cooldown:SetCooldown(0, 0)
+	
+	-- test for nil, but also only do the animation if the duration isn't 0
+	if startTime and duration and duration > 0 then
+		highlightFrame.cooldown:SetCooldown(startTime, duration)
+	end
+end
+
+------------------------------------------------------------
+-- Function: Update the main frame.
+------------------------------------------------------------
+function ns:UpdateHighlightFrame(texture, text)
+    highlightFrame.tex:SetTexture(texture)
+    highlightFrame.highlightText:SetText(text)
+end
+
+------------------------------------------------------------
+-- Function: Refreshes the UI.
+------------------------------------------------------------
+function ns:RefreshUI()
+    RedrawHighlightFrame()
+    UpdateActionBars()
+end
+
+------------------------------------------------------------
+-- Function: Initializes the UI.
+------------------------------------------------------------
+function ns:InitializeUI()
+    CreateHighlightFrame()
+    UpdateActionBars()
+    CreateSettingsFrame()
 end

@@ -1,6 +1,7 @@
 -- events.lua
 
 local ns = OBC
+local lastCastSpell = 0
 
 ------------------------------------------------------------
 -- Function: Registers events.
@@ -20,15 +21,27 @@ function ns:RegisterEvents()
 
 	-- Track when assisted highlight button changes.
 	EventRegistry:RegisterCallback("AssistedCombatManager.OnAssistedHighlightSpellChange", function()
-		-- Get highlighted button and then match the texture
+		-- Get highlighted button and then duplicate the texture
 		local button = ns:GetHighlightedButton()
 
 		if button then
-			ns.highlightFrame.tex:SetTexture(button.icon:GetTexture())
-			ns.highlightFrame.highlightText:SetText(ns:GetKeybinds(button))
-			ns.suggestedSpell = ns:GetSpellIDFromButton(button)
+            local spellID = ns:GetSpellIDFromButton(button)
+            local keybind = ns:GetKeybinds(button)
+            local tex = button.icon:GetTexture()
+            local dim = ns:IsSpellReady(spellID)
+            
+            ns:UpdateHighlightFrame(tex, keybind)
 		end
 	end)
+
+    -- Track whenever player uses an ability.
+    hooksecurefunc("UseAction", function(slot, checkCursor, onSelf)
+        local actionType, id = GetActionInfo(slot)
+
+        if id then
+            lastCastSpell = id
+        end
+    end)
 
 	-- Create listeners for spell activation events
 	--[[
@@ -54,7 +67,11 @@ function ns:RegisterEvents()
 	f:RegisterEvent("UNIT_SPELLCAST_INTERRUPTED")
 	f:RegisterEvent("UNIT_SPELLCAST_CHANNEL_START")
 	f:RegisterEvent("UNIT_SPELLCAST_CHANNEL_STOP")
-	--f:RegisterEvent("UNIT_SPELLCAST_CHANNEL_UPDATE")
+    f:RegisterEvent("UNIT_SPELLCAST_EMPOWER_START")
+    f:RegisterEvent("UNIT_SPELLCAST_EMPOWER_STOP")
+
+    -- When should the cooldown animation display?
+    -- Ability or macro used. Automatic casts or abilities should not show the animation.
 
 	f:SetScript("OnEvent", function(_, event, unit, _, spellID)
 		if unit ~= "player" then
@@ -69,23 +86,26 @@ function ns:RegisterEvents()
 			ns:ShowCooldownAnimation(startTime, spInfo.castTime / 1000.0)
 		elseif event == "UNIT_SPELLCAST_SUCCEEDED" then
 			local _, _, _, startTimeMS, endTimeMS = UnitChannelInfo("player")
-			
-			-- Check for empowered and channeled casts.
-			if startTimeMS and endTimeMS then
-				ns:ShowCooldownAnimation(startTime, (endTimeMS - startTimeMS) / 1000.0)
-			else
+			-- Check for empowered and channeled casts. Otherwise proceed.
+			if startTimeMS == nil and endTimeMS == nill and lastCastSpell == spellID then
 				-- Nope, just a regular instant cast
 				local cdInfo = C_Spell.GetSpellCooldown(61304)
 				ns:ShowCooldownAnimation(startTime, cdInfo.duration)
 			end
+        elseif event == "UNIT_SPELLCAST_CHANNEL_START" or event == "UNIT_SPELLCAST_EMPOWER_START" then
+			local _, _, _, startTimeMS, endTimeMS = UnitChannelInfo("player")
+
+            if startTimeMS and endTimeMS then
+			    ns:ShowCooldownAnimation(startTime, (endTimeMS - startTimeMS) / 1000.0)
+		    end
 		elseif
-			event == "UNIT_SPELLCAST_INTERRUPTED" or event == "UNIT_SPELLCAST_CHANNEL_STOP"or "UNIT_SPELLCAST_STOP" then
+			event == "UNIT_SPELLCAST_INTERRUPTED" or 
+            event == "UNIT_SPELLCAST_CHANNEL_STOP" or 
+            event == "UNIT_SPELLCAST_STOP" or
+            event == "UNIT_SPELLCAST_EMPOWER_STOP" then
 			ns:ShowCooldownAnimation(0, 0)
 			ns.currentSpell = 0
-		elseif event == "UNIT_SPELLCAST_CHANNEL_START" then
-			--local _, _, _, startTimeMS, endTimeMS = UnitChannelInfo("player")
-			--ShowCooldownAnimation(startTime, (endTimeMS - startTimeMS) / 1000.0)
-		end
+        end
 	end)
 end
 

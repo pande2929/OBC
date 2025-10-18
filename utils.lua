@@ -101,3 +101,21 @@ function ns:GetSpellIDFromButton(button)
     end
     return nil
 end
+
+------------------------------------------------------------
+-- Function: Checks if spell is ready or not.
+------------------------------------------------------------
+function ns:IsSpellReady(spellID)
+    local usable, nomana = C_Spell.IsSpellUsable(spellID)
+    if not usable or nomana then
+        return false
+    end
+
+    local cdInfo = C_Spell.GetSpellCooldown(spellID)
+    if startTime == 0 then
+        return true
+    end
+
+    -- Still on cooldown
+    return false
+end

@@ -4,25 +4,6 @@ local ns = OBC
 local highlightFrame = nil
 
 ------------------------------------------------------------
--- Function: Show/hide the dimming overlay
-------------------------------------------------------------
-local function ApplyDimEffect(dim)
-    local frame = highlightFrame
-
-    if not frame.DimOverlay then
-        local tex = frame:CreateTexture(nil, "OVERLAY")
-        tex:SetAllPoints()
-        tex:SetColorTexture(0, 0, 0, 0.5)
-        frame.DimOverlay = tex
-    end
-    if dim then
-        frame.DimOverlay:Show()
-    else
-        frame.DimOverlay:Hide()
-    end
-end
-
-------------------------------------------------------------
 -- Function: Updates the main frame.
 ------------------------------------------------------------
 local function RedrawHighlightFrame()
@@ -96,10 +77,6 @@ end
 -- Function: Show/hide action bars
 ------------------------------------------------------------
 local function UpdateActionBars()
-    --[[
-    /run local bar = MainMenuBar if bar:GetAlpha() == 0 then bar:SetAlpha(1) else bar:SetAlpha(0) end
-    /run local bar = MultiBarBottomLeft if bar:GetAlpha() == 0 then bar:SetAlpha(1) else bar:SetAlpha(0) end
-    ]]
     if OBCDB.settings.hideActionBar1 then
         local bar = MainMenuBar
         bar:SetAlpha(0)
@@ -538,4 +515,52 @@ function ns:InitializeUI()
     CreateHighlightFrame()
     UpdateActionBars()
     CreateSettingsFrame()
+end
+
+------------------------------------------------------------
+-- Function: Show/hide the dimming overlay
+------------------------------------------------------------
+function ns:ApplyDimEffect(show)
+    if show == nil then
+        return
+    end
+
+    local frame = highlightFrame
+
+    if not frame.DimOverlay then
+        local tex = frame:CreateTexture(nil, "OVERLAY")
+        tex:SetAllPoints()
+        tex:SetColorTexture(0, 0, 0, 0.5)
+        frame.DimOverlay = tex
+    end
+
+    if show then
+        frame.DimOverlay:Show()
+    else
+        frame.DimOverlay:Hide()
+    end
+end
+
+------------------------------------------------------------
+-- Function: Show/hide the out of range overlay.
+------------------------------------------------------------
+function ns:ApplyRedShift(show)
+    if show == nil then
+        return
+    end
+
+    local frame = highlightFrame
+
+    if not frame.RedOverlay then
+        local tex = frame:CreateTexture(nil, "OVERLAY")
+        tex:SetAllPoints()
+        tex:SetColorTexture(1, 0, 0, 0.3)
+        frame.RedOverlay = tex
+    end
+
+    if show then
+        frame.RedOverlay:Show()
+    else
+        frame.RedOverlay:Hide()
+    end
 end

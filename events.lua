@@ -4,35 +4,43 @@ local ns = OBC
 local lastCastSpell = 0
 
 ------------------------------------------------------------
+-- Function: When assisted highlight spell changes.
+------------------------------------------------------------
+local function OnSpellChange()
+    -- Get highlighted button and then duplicate the texture
+    local button = ns:GetHighlightedButton()
+
+    if button then
+        ns.recSpellID = ns:GetSpellIDFromButton(button)
+        local keybind = ns:GetKeybinds(button)
+        local tex = button.icon:GetTexture()
+        
+        ns:UpdateHighlightFrame(tex, keybind)
+    end
+end
+
+------------------------------------------------------------
+-- Function: When player leaves combat.
+------------------------------------------------------------
+local function OnLeaveCombat()
+    if event == "PLAYER_REGEN_ENABLED" then
+        if ns.dirtyUI then
+            ns:RefreshUI()
+        end
+    end
+end
+
+------------------------------------------------------------
 -- Function: Registers events.
 ------------------------------------------------------------
 function ns:RegisterEvents()
     -- Track combat state.
     local c = CreateFrame("Frame")
     c:RegisterEvent("PLAYER_REGEN_ENABLED")
-
-    c:SetScript("OnEvent", function(self, event)
-        if event == "PLAYER_REGEN_ENABLED" then
-            if ns.dirtyUI then
-                ns:RefreshUI()
-            end
-        end
-    end)
+    c:SetScript("OnEvent", OnLeaveCombat)
 
 	-- Track when assisted highlight button changes.
-	EventRegistry:RegisterCallback("AssistedCombatManager.OnAssistedHighlightSpellChange", function()
-		-- Get highlighted button and then duplicate the texture
-		local button = ns:GetHighlightedButton()
-
-		if button then
-            local spellID = ns:GetSpellIDFromButton(button)
-            local keybind = ns:GetKeybinds(button)
-            local tex = button.icon:GetTexture()
-            local dim = ns:IsSpellReady(spellID)
-            
-            ns:UpdateHighlightFrame(tex, keybind)
-		end
-	end)
+	EventRegistry:RegisterCallback("AssistedCombatManager.OnAssistedHighlightSpellChange", OnSpellChange)
 
     -- Track whenever player uses an ability.
     hooksecurefunc("UseAction", function(slot, checkCursor, onSelf)

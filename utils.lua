@@ -91,13 +91,14 @@ end]]
 function ns:GetSpellIDFromButton(button)
     if not button or not button.action then return nil end
 
-    local actionType, id = GetActionInfo(button.action)
+    local actionType, id, subType = GetActionInfo(button.action)
     if actionType == "spell" then
         return id
-    elseif actionType == "macro" then
+    elseif actionType == "macro" and subType == "spell" then
         -- macros can cast spells, so check the macro body
-        local macroSpell = GetMacroSpell(id)
-        return macroSpell
+        --local macroSpell = GetMacroSpell(id)
+        --return macroSpell
+        return id
     end
     return nil
 end
@@ -106,13 +107,14 @@ end
 -- Function: Checks if spell is ready or not.
 ------------------------------------------------------------
 function ns:IsSpellReady(spellID)
-    local usable, nomana = C_Spell.IsSpellUsable(spellID)
-    if not usable or nomana then
+    local isUsable, insufficientPower = C_Spell.IsSpellUsable(spellID)
+
+    if not isUsable or insufficientPower then
         return false
     end
 
     local cdInfo = C_Spell.GetSpellCooldown(spellID)
-    if startTime == 0 then
+    if cdInfo.startTime == 0 then
         return true
     end
 

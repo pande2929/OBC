@@ -1,6 +1,6 @@
 -- utils.lua
 
-local ns = OBC
+local ns = NextUp
 
 local actionBarPrefixes = {
 	"ActionButton",

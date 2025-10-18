@@ -1,9 +1,9 @@
 -- spellcheck.lua
 
-local ns = OBC
+local ns = NextUp
 
 -- Check if the target is both in range and the spell is ready.
-local ticket = C_Timer.NewTicker(0.2, function()
+local ticket = C_Timer.NewTicker(0.1, function()
     local spellID = ns.recSpellID
 
     if not spellID then
@@ -21,6 +21,7 @@ local ticket = C_Timer.NewTicker(0.2, function()
         inRange = C_Spell.IsSpellInRange(spellID, "target")
     end
 
+    -- Apply the red shift
     if inRange ~= nil then
         ns:ApplyRedShift(not inRange)
     end

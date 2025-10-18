@@ -1,5 +1,5 @@
 ## Interface: 110200
-## Title: OBC
+## Title: NextUp
 ## Author: Pande
 ## Version 0.1
 
@@ -9,4 +9,4 @@ events.lua
 ui.lua
 spellcheck.lua
 
-## SavedVariables: OBCDB
+## SavedVariables: NextUp_SavedVariables

@@ -1,6 +1,6 @@
 -- ui.lua
 
-local ns = OBC
+local ns = NextUp
 local highlightFrame = nil
 
 ------------------------------------------------------------
@@ -12,13 +12,13 @@ local function RedrawHighlightFrame()
     highlightFrame.tex:ClearAllPoints()
 	highlightFrame.highlightText:ClearAllPoints()
 
-	highlightFrame:SetSize(OBCDB.settings.sizeX, OBCDB.settings.sizeY)
+	highlightFrame:SetSize(NextUp_SavedVariables.settings.sizeX, NextUp_SavedVariables.settings.sizeY)
 	highlightFrame:SetPoint(
-		OBCDB.settings.point,
+		NextUp_SavedVariables.settings.point,
 		UIParent,
-		OBCDB.settings.point,
-		OBCDB.settings.offsetX,
-		OBCDB.settings.offsetY
+		NextUp_SavedVariables.settings.point,
+		NextUp_SavedVariables.settings.offsetX,
+		NextUp_SavedVariables.settings.offsetY
 	)
 
     highlightFrame:SetBackdropBorderColor(0.1, 0.1, 0.1)
@@ -29,13 +29,13 @@ local function RedrawHighlightFrame()
     highlightFrame.tex:SetTexCoord(0.06, 0.94, 0.06, 0.94)
 
 	-- Set Text
-	highlightFrame.highlightText:SetFont(highlightFrame.highlightText:GetFont(), OBCDB.settings.fontSize, "OUTLINE")
+	highlightFrame.highlightText:SetFont(highlightFrame.highlightText:GetFont(), NextUp_SavedVariables.settings.fontSize, "OUTLINE")
 	highlightFrame.highlightText:SetPoint(
-		OBCDB.settings.textPoint,
+		NextUp_SavedVariables.settings.textPoint,
 		highlightFrame,
-		OBCDB.settings.textPoint,
-		OBCDB.settings.textOffsetX,
-		OBCDB.settings.textOffsetY
+		NextUp_SavedVariables.settings.textPoint,
+		NextUp_SavedVariables.settings.textOffsetX,
+		NextUp_SavedVariables.settings.textOffsetY
 	)
 	highlightFrame.highlightText:SetTextColor(1, 1, 1, 1)
 end
@@ -77,7 +77,7 @@ end
 -- Function: Show/hide action bars
 ------------------------------------------------------------
 local function UpdateActionBars()
-    if OBCDB.settings.hideActionBar1 then
+    if NextUp_SavedVariables.settings.hideActionBar1 then
         local bar = MainMenuBar
         bar:SetAlpha(0)
     else
@@ -85,7 +85,7 @@ local function UpdateActionBars()
         bar:SetAlpha(1)        
     end
 
-    if OBCDB.settings.hideActionBar2 then
+    if NextUp_SavedVariables.settings.hideActionBar2 then
         local bar = MultiBarBottomLeft
         bar:SetAlpha(0)
     else
@@ -93,7 +93,7 @@ local function UpdateActionBars()
         bar:SetAlpha(1)        
     end
 
-    if OBCDB.settings.hideActionBar3 then
+    if NextUp_SavedVariables.settings.hideActionBar3 then
         local bar = MultiBarBottomRight
         bar:SetAlpha(0)
     else
@@ -132,11 +132,11 @@ local function CreateSettingsFrame()
 		end
 
 		local function GetValue()
-			return OBCDB.settings.point
+			return NextUp_SavedVariables.settings.point
 		end
 
 		local function SetValue(value)
-			OBCDB.settings.point = value
+			NextUp_SavedVariables.settings.point = value
 		end
 
 		local setting = Settings.RegisterProxySetting(
@@ -163,11 +163,11 @@ local function CreateSettingsFrame()
 		local tooltip = "Move the main UI left or right."
 
 		local function GetValue()
-			return OBCDB.settings.offsetX
+			return NextUp_SavedVariables.settings.offsetX
 		end
 
 		local function SetValue(value)
-			OBCDB.settings.offsetX = value
+			NextUp_SavedVariables.settings.offsetX = value
 		end
 
 		local setting = Settings.RegisterProxySetting(
@@ -197,11 +197,11 @@ local function CreateSettingsFrame()
 		local tooltip = "Move the main UI up or down."
 
 		local function GetValue()
-			return OBCDB.settings.offsetY
+			return NextUp_SavedVariables.settings.offsetY
 		end
 
 		local function SetValue(value)
-			OBCDB.settings.offsetY = value
+			NextUp_SavedVariables.settings.offsetY = value
 		end
 
 		local setting = Settings.RegisterProxySetting(
@@ -231,11 +231,11 @@ local function CreateSettingsFrame()
 		local tooltip = "Change the width of the main UI."
 
 		local function GetValue()
-			return OBCDB.settings.sizeX
+			return NextUp_SavedVariables.settings.sizeX
 		end
 
 		local function SetValue(value)
-			OBCDB.settings.sizeX = value
+			NextUp_SavedVariables.settings.sizeX = value
 		end
 
 		local setting = Settings.RegisterProxySetting(
@@ -265,11 +265,11 @@ local function CreateSettingsFrame()
 		local tooltip = "Change the width of the main UI."
 
 		local function GetValue()
-			return OBCDB.settings.sizeY
+			return NextUp_SavedVariables.settings.sizeY
 		end
 
 		local function SetValue(value)
-			OBCDB.settings.sizeY = value
+			NextUp_SavedVariables.settings.sizeY = value
 		end
 
 		local setting = Settings.RegisterProxySetting(
@@ -309,11 +309,11 @@ local function CreateSettingsFrame()
 		end
 
 		local function GetValue()
-			return OBCDB.settings.textPoint
+			return NextUp_SavedVariables.settings.textPoint
 		end
 
 		local function SetValue(value)
-			OBCDB.settings.textPoint = value
+			NextUp_SavedVariables.settings.textPoint = value
 		end
 
 		local setting = Settings.RegisterProxySetting(
@@ -340,11 +340,11 @@ local function CreateSettingsFrame()
 		local tooltip = "Change the position of the text left or right."
 
 		local function GetValue()
-			return OBCDB.settings.textOffsetX
+			return NextUp_SavedVariables.settings.textOffsetX
 		end
 
 		local function SetValue(value)
-			OBCDB.settings.textOffsetX = value
+			NextUp_SavedVariables.settings.textOffsetX = value
 		end
 
 		local setting = Settings.RegisterProxySetting(
@@ -374,11 +374,11 @@ local function CreateSettingsFrame()
 		local tooltip = "Change the position of the text up or down."
 
 		local function GetValue()
-			return OBCDB.settings.textOffsetY
+			return NextUp_SavedVariables.settings.textOffsetY
 		end
 
 		local function SetValue(value)
-			OBCDB.settings.textOffsetY = value
+			NextUp_SavedVariables.settings.textOffsetY = value
 		end
 
 		local setting = Settings.RegisterProxySetting(
@@ -408,11 +408,11 @@ local function CreateSettingsFrame()
 		local tooltip = "Change the font size."
 
 		local function GetValue()
-			return OBCDB.settings.fontSize
+			return NextUp_SavedVariables.settings.fontSize
 		end
 
 		local function SetValue(value)
-			OBCDB.settings.fontSize = value
+			NextUp_SavedVariables.settings.fontSize = value
 		end
 
 		local setting = Settings.RegisterProxySetting(
@@ -438,13 +438,13 @@ local function CreateSettingsFrame()
         local name = "Hide Actionbar 1"
         local variable = "Hide_Actionbar1"
         local variableKey = "hideActionBar1"
-        local variableTbl = OBCDB.settings
+        local variableTbl = NextUp_SavedVariables.settings
         local defaultValue = false
 
         local setting = Settings.RegisterAddOnSetting(category, variable, variableKey, variableTbl, type(defaultValue), name, defaultValue)
         setting:SetValueChangedCallback(ns.OnSettingChanged)
 
-        local tooltip = "Show or hide the primary action bar. Useful if since Blizzard's assisted highlight doesn't use actions on disabled bars."
+        local tooltip = "Show or hide the primary action bar. Useful since Blizzard's assisted highlight doesn't use actions on disabled bars."
         Settings.CreateCheckbox(category, setting, tooltip)
     end
     
@@ -453,13 +453,13 @@ local function CreateSettingsFrame()
         local name = "Hide Actionbar 2"
         local variable = "Hide_Actionbar2"
         local variableKey = "hideActionBar2"
-        local variableTbl = OBCDB.settings
+        local variableTbl = NextUp_SavedVariables.settings
         local defaultValue = false
 
         local setting = Settings.RegisterAddOnSetting(category, variable, variableKey, variableTbl, type(defaultValue), name, defaultValue)
         setting:SetValueChangedCallback(ns.OnSettingChanged)
 
-        local tooltip = "Show or hide Action Bar 2. Useful if since Blizzard's assisted highlight doesn't use actions on disabled bars."
+        local tooltip = "Show or hide Action Bar 2. Useful since Blizzard's assisted highlight doesn't use actions on disabled bars."
         Settings.CreateCheckbox(category, setting, tooltip)
     end
     
@@ -468,15 +468,36 @@ local function CreateSettingsFrame()
         local name = "Hide Actionbar 3"
         local variable = "Hide_Actionbar3"
         local variableKey = "hideActionBar3"
-        local variableTbl = OBCDB.settings
+        local variableTbl = NextUp_SavedVariables.settings
         local defaultValue = false
 
         local setting = Settings.RegisterAddOnSetting(category, variable, variableKey, variableTbl, type(defaultValue), name, defaultValue)
         setting:SetValueChangedCallback(ns.OnSettingChanged)
 
-        local tooltip = "Show or hide the Action Bar 3. Useful if since Blizzard's assisted highlight doesn't use actions on disabled bars."
+        local tooltip = "Show or hide the Action Bar 3. Useful since Blizzard's assisted highlight doesn't use actions on disabled bars."
         Settings.CreateCheckbox(category, setting, tooltip)
     end
+end
+
+
+------------------------------------------------------------
+-- Function: Checks if currently playing CD animation.
+------------------------------------------------------------
+local function IsCooldownActive()
+	local frame = highlightFrame
+
+    if not frame or not frame.GetCooldownTimes then return false end
+
+    local start, duration, enable = frame:GetCooldownTimes()
+    if enable ~= 1 or not start or start == 0 then
+        return false
+    end
+
+    -- Convert milliseconds to seconds for GetTime comparison
+    local now = GetTime()
+    local endTime = (start / 1000) + (duration / 1000)
+
+    return now < endTime
 end
 
 ------------------------------------------------------------
@@ -533,6 +554,8 @@ function ns:ApplyDimEffect(show)
         tex:SetColorTexture(0, 0, 0, 0.5)
         frame.DimOverlay = tex
     end
+
+	show = show and not IsCooldownActive()
 
     if show then
         frame.DimOverlay:Show()

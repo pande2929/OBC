@@ -1,8 +1,8 @@
 -- core.lua
 
 local addonName, ns = ...
-OBC = ns
-OBC.name = "OBC"
+NextUp = ns
+NextUp.name = "NextUp"
 
 -- TODO:
 -- Dim abilities that are not ready yet.
@@ -10,10 +10,10 @@ OBC.name = "OBC"
 ------------------------------------------------------------
 -- Function: Initialize the addon
 ------------------------------------------------------------
-function OBC:OnInitialize()
+function NextUp:OnInitialize()
 	-- Initialize the UI
-	OBC:InitializeUI()
+	NextUp:InitializeUI()
 
 	-- Event handlers and hooks
-	OBC:RegisterEvents()
+	NextUp:RegisterEvents()
 end

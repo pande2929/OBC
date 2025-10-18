@@ -1,6 +1,6 @@
 -- events.lua
 
-local ns = OBC
+local ns = NextUp
 local lastCastSpell = 0
 
 ------------------------------------------------------------
@@ -142,9 +142,9 @@ login:RegisterEvent("PLAYER_LOGIN")
 login:SetScript("OnEvent", function(_, event, arg1)
 	if event == "PLAYER_LOGIN" then
 		-- Load or initialize database
-		OBCDB = OBCDB or {}
-		if not OBCDB.settings then
-			OBCDB.settings = {
+		NextUp_SavedVariables = NextUp_SavedVariables or {}
+		if not NextUp_SavedVariables.settings then
+			NextUp_SavedVariables.settings = {
 				fontSize = 35,
 				offsetX = 0,
 				offsetY = -180,
@@ -161,15 +161,15 @@ login:SetScript("OnEvent", function(_, event, arg1)
 			}
 		end
 
-		print(OBC.name .. " settings initialized.")
+		print(ns.name .. " settings initialized.")
 
 		-- Check if Assisted Hightlight is active. If it isn't, then ask the user if they want to enable it.
 		if GetCVarBool("assistedCombatHighlight") then
 			ns:OnInitialize()
 		else
 			--print("Blizzard's Assisted Highlight feature is not enabled. Please enable and reload.")
-			StaticPopupDialogs["OBC_ADDON_CONFIRM"] = {
-				text = "Blizzard's Assisted Highlight feature is not enabled, which the OBC addon requires. Do you wish to enable it?",
+			StaticPopupDialogs["NEXTUP_ADDON_CONFIRM"] = {
+				text = "Blizzard's Assisted Highlight feature is not enabled, which the NextUp addon requires. Do you wish to enable it?",
 				button1 = "Yes",
 				button2 = "No",
 				OnAccept = function(self)
@@ -184,7 +184,7 @@ login:SetScript("OnEvent", function(_, event, arg1)
 			}
 
 			-- Show the popup:
-			StaticPopup_Show("OBC_ADDON_CONFIRM")
+			StaticPopup_Show("NEXTUP_ADDON_CONFIRM")
 		end
 	end
 end)

@@ -2,6 +2,7 @@
 
 local ns = NextUp
 local highlightFrame = nil
+local LBG = LibStub("LibButtonGlow-1.0")
 
 ------------------------------------------------------------
 -- Function: Updates the main frame.
@@ -20,8 +21,6 @@ local function RedrawHighlightFrame()
 		NextUp_SavedVariables.settings.offsetX,
 		NextUp_SavedVariables.settings.offsetY
 	)
-
-    highlightFrame:SetBackdropBorderColor(0.1, 0.1, 0.1)
 	
 	--highlightFrame.tex:SetAllPoints(highlightFrame)
     highlightFrame.tex:SetPoint("TOPLEFT", highlightFrame, "TOPLEFT", 2, -2)
@@ -57,13 +56,15 @@ local function CreateHighlightFrame()
 
     -- Create the frame
     highlightFrame = CreateFrame("Frame", nil, UIParent, "BackdropTemplate")
+	highlightFrame:SetBackdrop(backdropInfo)
+	highlightFrame:SetBackdropColor(0.2, 0.2, 0.2, 0)
+	highlightFrame:SetBackdropBorderColor(0.2, 0.2, 0.2, 0	)
 
     -- Text
 	highlightFrame.highlightText = highlightFrame:CreateFontString(nil, "OVERLAY", "NumberFontNormal")
     
     -- Texture
     highlightFrame.tex = highlightFrame:CreateTexture()
-    highlightFrame:SetBackdrop(backdropInfo)
 
     -- Cooldown overlay
     highlightFrame.cooldown = CreateFrame("Cooldown", "$parentCooldown", highlightFrame, "CooldownFrameTemplate")
@@ -431,7 +432,20 @@ local function CreateSettingsFrame()
 		Settings.CreateSlider(category, setting, options, tooltip)
 	end
 
-	Settings.RegisterAddOnCategory(category)
+	-- Show/hide Overlay Glow
+    do 
+        local name = "Show Ability Procs"
+        local variable = "Show_OverlayGlow"
+        local variableKey = "showOverlayGlow"
+        local variableTbl = NextUp_SavedVariables.settings
+        local defaultValue = false
+
+        local setting = Settings.RegisterAddOnSetting(category, variable, variableKey, variableTbl, type(defaultValue), name, defaultValue)
+        setting:SetValueChangedCallback(ns.OnSettingChanged)
+
+        local tooltip = "Show or hide ability procs."
+        Settings.CreateCheckbox(category, setting, tooltip)
+    end
 
     -- Hide action bar 1
     do 
@@ -477,6 +491,8 @@ local function CreateSettingsFrame()
         local tooltip = "Show or hide the Action Bar 3. Useful since Blizzard's assisted highlight doesn't use actions on disabled bars."
         Settings.CreateCheckbox(category, setting, tooltip)
     end
+
+	Settings.RegisterAddOnCategory(category)
 end
 
 
@@ -486,18 +502,13 @@ end
 local function IsCooldownActive()
 	local frame = highlightFrame
 
-    if not frame or not frame.GetCooldownTimes then return false end
+    if not frame or not frame.cooldown.GetCooldownTimes then return false end
 
-    local start, duration, enable = frame:GetCooldownTimes()
-    if enable ~= 1 or not start or start == 0 then
-        return false
-    end
-
-    -- Convert milliseconds to seconds for GetTime comparison
-    local now = GetTime()
-    local endTime = (start / 1000) + (duration / 1000)
-
-    return now < endTime
+    local start, duration = frame.cooldown:GetCooldownTimes()
+	--print(start, duration)
+	
+	-- cooldown is active when duration is ~0 and ~1000
+	return duration ~= 0 and duration ~= 1000
 end
 
 ------------------------------------------------------------
@@ -516,9 +527,31 @@ end
 ------------------------------------------------------------
 -- Function: Update the main frame.
 ------------------------------------------------------------
+--[[
 function ns:UpdateHighlightFrame(texture, text)
     highlightFrame.tex:SetTexture(texture)
     highlightFrame.highlightText:SetText(text)
+	highlightFrame:SetBackdropColor(0.2, 0.2, 0.2, 1)
+	highlightFrame:SetBackdropBorderColor(0.2, 0.2, 0.2, 1)
+end
+]]
+function ns:UpdateHighlightFrame(button)
+	if not ns.recSpellID then return end
+
+	local tex = C_Spell.GetSpellTexture(ns.recSpellID)
+	
+	-- Check if glowing
+	if NextUp_SavedVariables.settings.showOverlayGlow then
+		local glowing = C_SpellActivationOverlay.IsSpellOverlayed(spellID)
+		ns:ShowOverlayGlow(glowing)
+	end
+
+	local keybind = ns:GetKeybinds(button)
+
+	highlightFrame.tex:SetTexture(tex)
+    highlightFrame.highlightText:SetText(keybind)
+	highlightFrame:SetBackdropColor(0.2, 0.2, 0.2, 1)
+	highlightFrame:SetBackdropBorderColor(0.2, 0.2, 0.2, 1)
 end
 
 ------------------------------------------------------------
@@ -542,25 +575,35 @@ end
 -- Function: Show/hide the dimming overlay
 ------------------------------------------------------------
 function ns:ApplyDimEffect(show)
-    if show == nil then
+    if show == nil or not highlightFrame then
         return
     end
 
     local frame = highlightFrame
 
-    if not frame.DimOverlay then
+    if not frame.dimOverlay then
         local tex = frame:CreateTexture(nil, "OVERLAY")
         tex:SetAllPoints()
         tex:SetColorTexture(0, 0, 0, 0.5)
-        frame.DimOverlay = tex
+        frame.dimOverlay = tex
     end
 
-	show = show and not IsCooldownActive()
+	-- When to apply dim effect?
+	-- spell is ready (show == true)
+	-- cooldown animation is NOT playing (IsCooldownActive == false)
+	-- show == true and IsCooldownActive == false
 
-    if show then
-        frame.DimOverlay:Show()
+	--print(show, not IsCooldownActive())
+	--print(show and not IsCooldownActive())
+	--show = show and not IsCooldownActive()
+
+	local cooldown = IsCooldownActive()
+
+    --if show == true and cooldown == false then
+	if show then
+        frame.dimOverlay:Show()
     else
-        frame.DimOverlay:Hide()
+        frame.dimOverlay:Hide()
     end
 end
 
@@ -568,22 +611,28 @@ end
 -- Function: Show/hide the out of range overlay.
 ------------------------------------------------------------
 function ns:ApplyRedShift(show)
-    if show == nil then
+    if show == nil or not highlightFrame then
         return
     end
 
     local frame = highlightFrame
 
-    if not frame.RedOverlay then
-        local tex = frame:CreateTexture(nil, "OVERLAY")
-        tex:SetAllPoints()
-        tex:SetColorTexture(1, 0, 0, 0.3)
-        frame.RedOverlay = tex
-    end
-
     if show then
-        frame.RedOverlay:Show()
+        --frame.redOverlay:Show()
+		frame.highlightText:SetTextColor(1, 0, 0)
     else
-        frame.RedOverlay:Hide()
+        --frame.redOverlay:Hide()
+		frame.highlightText:SetTextColor(1, 1, 1)
     end
+end
+
+------------------------------------------------------------
+-- Function: Show/hide the overlay glow.
+------------------------------------------------------------
+function ns:ShowOverlayGlow(show)
+	if show then
+		LBG.ShowOverlayGlow(highlightFrame)
+	else
+		LBG.HideOverlayGlow(highlightFrame)
+	end
 end

@@ -3,6 +3,8 @@
 ## Author: Pande
 ## Version 0.1
 
+libs\LibStub\LibStub.lua
+libs\LibButtonGlow-1.0\LibButtonGlow-1.0.lua
 core.lua
 utils.lua
 events.lua

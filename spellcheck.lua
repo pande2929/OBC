@@ -2,29 +2,53 @@
 
 local ns = NextUp
 
--- Check if the target is both in range and the spell is ready.
-local ticket = C_Timer.NewTicker(0.1, function()
+-- Periodically update the main frame with effects.
+local effectTicker = C_Timer.NewTicker(0.1, function()
     local spellID = ns.recSpellID
 
-    if not spellID then
-        spellID = 0
-    end
+    if spellID then
+        -- Spell ready?
+        local isReady = ns:IsSpellReady(spellID)
 
-    -- Spell ready?
-    local isReady = ns:IsSpellReady(spellID)
-    ns:ApplyDimEffect(not isReady)
+        -- Target in range?
+        local inRange = true
+        if UnitExists("target") and UnitCanAttack("player", "target") and 
+            not UnitIsDead("target") and not UnitIsDeadOrGhost("target") then
+            inRange = C_Spell.IsSpellInRange(spellID, "target")
+        end
 
-    -- Target in range?
-    local inRange = true
-    if UnitExists("target") and UnitCanAttack("player", "target") and 
-        not UnitIsDead("target") and not UnitIsDeadOrGhost("target") then
-        inRange = C_Spell.IsSpellInRange(spellID, "target")
-    end
+        -- Apply the red shift
+        if inRange ~= nil then
+            ns:ApplyRedShift(not inRange)
+        else
+            ns:ApplyRedShift(false)
+        end
 
-    -- Apply the red shift
-    if inRange ~= nil then
-        ns:ApplyRedShift(not inRange)
+        -- Apply dim overlay
+        -- spell is not ready
+        -- is out of range
+
+        if isReady == false then
+            ns:ApplyDimEffect(true)
+        elseif inRange == false then
+            ns:ApplyDimEffect(true)
+        else
+            ns:ApplyDimEffect(false)
+        end
     else
-        ns:ApplyRedShift(false)
+        ns:ApplyDimEffect(false)
+    end
+end)
+
+
+local verifyTicker = C_Timer.NewTicker(1, function()
+    local button = ns:GetHighlightedButton()
+	local spellID = ns:GetSpellIDFromButton(button)
+
+    -- Check if ns.recSpellID is currently selected, if not then update it.
+    
+    if spellID ~= ns.recSpellID then
+        ns.recSpellID = spellID
+        ns:UpdateHighlightFrame(button)
     end
 end)

@@ -9,14 +9,27 @@ local lastCastSpell = 0
 local function OnSpellChange()
     -- Get highlighted button and then duplicate the texture
     local button = ns:GetHighlightedButton()
+	local spellID = ns:GetSpellIDFromButton(button)
 
-    if button then
-        ns.recSpellID = ns:GetSpellIDFromButton(button)
-        local keybind = ns:GetKeybinds(button)
-        local tex = button.icon:GetTexture()
-        
-        ns:UpdateHighlightFrame(tex, keybind)
-    end
+	ns.recSpellID = spellID
+	ns:UpdateHighlightFrame(button)
+
+	if spellID then
+		--[[
+		local tex = C_Spell.GetSpellTexture(spellID)
+		
+		-- Check if glowing
+		if NextUp_SavedVariables.settings.showOverlayGlow then
+			local glowing = C_SpellActivationOverlay.IsSpellOverlayed(spellID)
+			ns:ShowOverlayGlow(glowing)
+		end
+
+		local keybind = ns:GetKeybinds(button)
+
+		-- Update
+		ns:UpdateHighlightFrame(tex, keybind)
+		]]
+	end
 end
 
 ------------------------------------------------------------
@@ -52,20 +65,23 @@ function ns:RegisterEvents()
     end)
 
 	-- Create listeners for spell activation events
-	--[[
-	local s = CreateFrame("Frame")
-	s:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_SHOW")
-	s:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_HIDE")
+	if NextUp_SavedVariables.settings.showOverlayGlow then
+		local s = CreateFrame("Frame")
+		s:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_SHOW")
+		s:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_HIDE")
 
-	s:SetScript("OnEvent", function(self, event, spellID)
-		if event == "SPELL_ACTIVATION_OVERLAY_GLOW_SHOW" and suggestedSpell == spellID then
-			ActionButton_ShowOverlayGlow(highlightFrame)
-		elseif event == "SPELL_ACTIVATION_OVERLAY_GLOW_HIDE" and suggestedSpell == spellID  then
-			--hide glowing overlay
-			ActionButton_HideOverlayGlow(highlightFrame)
-		end
-	end)
-	]]
+		s:SetScript("OnEvent", function(self, event, spellID)
+			if ns:IsRecommendedSpell(spellID) then
+				if event == "SPELL_ACTIVATION_OVERLAY_GLOW_SHOW" then
+					-- show overlay glow
+					ns:ShowOverlayGlow(true)
+				elseif event == "SPELL_ACTIVATION_OVERLAY_GLOW_HIDE" then
+					-- hide overlay glow
+					ns:ShowOverlayGlow(false)
+				end
+			end
+		end)
+	end
 
 	-- Create listeners for casting events.
 	local f = CreateFrame("Frame")
@@ -112,7 +128,6 @@ function ns:RegisterEvents()
             event == "UNIT_SPELLCAST_STOP" or
             event == "UNIT_SPELLCAST_EMPOWER_STOP" then
 			ns:ShowCooldownAnimation(0, 0)
-			ns.currentSpell = 0
         end
 	end)
 end
@@ -155,13 +170,32 @@ login:SetScript("OnEvent", function(_, event, arg1)
 				textPoint = "CENTER",
 				textOffsetX = 0,
 				textOffsetY = 0,
+				showOverlayGlow = false,
                 hideActionBar1 = false,
                 hideActionBar2 = false,
                 hideActionBar3 = false
 			}
 		end
 
-		print(ns.name .. " settings initialized.")
+		--print(ns.name .. " settings initialized.")
+
+		--[[
+		SLASH_NEXTUP1 = "/nextup"
+		SLASH_NEXTUP2 = "/nu"
+
+		SlashCmdList["NEXTUP"] = function(msg)
+			msg = msg:lower()
+			if msg == "showbars" then
+				--NextUpFrame:Show()
+			elseif msg == "hidebars" then
+				--NextUpFrame:Hide()
+			else
+				print("NextUp commands:")
+				print("/nextup showbars - Show all action bars.")
+				print("/nextup hidebars - Hide the NextUp frame")
+			end
+		end
+		]]
 
 		-- Check if Assisted Hightlight is active. If it isn't, then ask the user if they want to enable it.
 		if GetCVarBool("assistedCombatHighlight") then

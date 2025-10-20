@@ -11,6 +11,7 @@ local actionBarPrefixes = {
 	"MultiBar5Button",
 	"MultiBar6Button",
 	"MultiBar7Button",
+	"StanceButton"
 }
 
 local actionBarPrefixMatrix = {
@@ -47,6 +48,14 @@ function ns:GetHighlightedButton()
 end
 
 ------------------------------------------------------------
+-- Function: Get the currently recommended spell.
+------------------------------------------------------------
+function ns:GetHighlightedSpell()
+	local button = ns:GetHighlightedButton()
+	return ns:GetSpellIDFromButton(button)
+end
+
+------------------------------------------------------------
 -- Function: Gets action bar button name from a button.
 ------------------------------------------------------------
 local function GetActionBarButtonName(button)
@@ -58,6 +67,10 @@ end
 -- Function: Returns the keybinds for a given action button.
 ------------------------------------------------------------
 function ns:GetKeybinds(button)
+	if not button or not button.action then
+		return nil
+	end
+	
 	local binding = ""
 	local name = GetActionBarButtonName(button)
 	local keys = { GetBindingKey(name) }
@@ -72,35 +85,35 @@ function ns:GetKeybinds(button)
 end
 
 ------------------------------------------------------------
--- Function: Returns if a given spell is glowing or not.
-------------------------------------------------------------
---[[
-local function IsSpellGlowing(spellID)
-	local isGlowing = false
-	
-	if (glowingSpells[spellID]) then
-		isGlowing = glowingSpells[spellID]
-	end
-	
-	return isGlowing
-end]]
-
-------------------------------------------------------------
 -- Function: Gets a spellID from a button.
 ------------------------------------------------------------
 function ns:GetSpellIDFromButton(button)
-    if not button or not button.action then return nil end
+    --if not button or not button.action then return nil end
+	if not button then
+		return nil
+	end
 
-    local actionType, id, subType = GetActionInfo(button.action)
-    if actionType == "spell" then
-        return id
-    elseif actionType == "macro" and subType == "spell" then
-        -- macros can cast spells, so check the macro body
-        --local macroSpell = GetMacroSpell(id)
-        --return macroSpell
-        return id
-    end
-    return nil
+	spellID = nil
+
+	if button.action then
+		local actionType, id, subType = GetActionInfo(button.action)
+
+		if actionType == "spell" then
+			spellID = id
+		elseif actionType == "macro" and subType == "spell" then
+			-- macros can cast spells, so check the macro body
+			--local macroSpell = GetMacroSpell(id)
+			--return macroSpell
+			spellID = id
+		end
+	else
+		_, _, _, stanceSpellID = GetShapeshiftFormInfo(button:GetID())
+		--local spInfo = C_Spell.GetSpellInfo(stanceSpellID)
+		--print(spInfo.name)
+		spellID = stanceSpellID
+	end
+
+    return spellID
 end
 
 ------------------------------------------------------------
@@ -120,4 +133,11 @@ function ns:IsSpellReady(spellID)
 
     -- Still on cooldown
     return false
+end
+
+------------------------------------------------------------
+-- Function: Checks if the spell matches suggested spell.
+------------------------------------------------------------
+function ns:IsRecommendedSpell(spellID)
+	return ns.recSpellID == spellID
 end

@@ -71,6 +71,16 @@ local function CreateHighlightFrame()
     highlightFrame.cooldown:SetPoint("TOPLEFT", highlightFrame, "TOPLEFT", 2, -2)
     highlightFrame.cooldown:SetPoint("BOTTOMRIGHT", highlightFrame, "BOTTOMRIGHT", -2, 2)
 
+	-- Tooltip handlers
+	highlightFrame:SetScript("OnEnter", function(self)
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+    	GameTooltip:SetSpellByID(ns.recSpellID)
+    	GameTooltip:Show()
+	end)
+	highlightFrame:SetScript("OnLeave", function(self)
+		GameTooltip:Hide()
+	end)
+
     RedrawHighlightFrame()
 end
 

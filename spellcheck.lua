@@ -36,7 +36,7 @@ local effectTicker = C_Timer.NewTicker(0.1, function()
             ns:ApplyDimEffect(false)
         end
     else
-        ns:ApplyDimEffect(false)
+        --ns:ApplyDimEffect(false)
     end
 end)
 

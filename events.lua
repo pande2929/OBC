@@ -130,6 +130,24 @@ function ns:RegisterEvents()
 			ns:ShowCooldownAnimation(0, 0)
         end
 	end)
+
+end
+
+------------------------------------------------------------
+-- Tooltip event handler.
+------------------------------------------------------------
+function ns:OnEnter(self, event)
+	print(self)
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+    GameTooltip:SetSpellByID(ns.recSpellID)
+    GameTooltip:Show()
+end
+
+------------------------------------------------------------
+-- Tooltip event handler.
+------------------------------------------------------------
+function ns:OnLeave(self, event)
+	GameTooltip:Hide()
 end
 
 ------------------------------------------------------------

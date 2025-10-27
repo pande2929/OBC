@@ -11,24 +11,9 @@ local function OnSpellChange()
     local button = ns:GetHighlightedButton()
 	local spellID = ns:GetSpellIDFromButton(button)
 
-	ns.recSpellID = spellID
-	ns:UpdateHighlightFrame(button)
-
 	if spellID then
-		--[[
-		local tex = C_Spell.GetSpellTexture(spellID)
-		
-		-- Check if glowing
-		if NextUp_SavedVariables.settings.showOverlayGlow then
-			local glowing = C_SpellActivationOverlay.IsSpellOverlayed(spellID)
-			ns:ShowOverlayGlow(glowing)
-		end
-
-		local keybind = ns:GetKeybinds(button)
-
-		-- Update
-		ns:UpdateHighlightFrame(tex, keybind)
-		]]
+		ns.recSpellID = spellID
+		ns:UpdateHighlightFrame(button)
 	end
 end
 

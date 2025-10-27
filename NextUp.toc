@@ -1,7 +1,7 @@
-## Interface: 110200
+## Interface: 110207
 ## Title: NextUp
 ## Author: Pande
-## Version 0.1
+## Version 0.2
 
 libs\LibStub\LibStub.lua
 libs\LibButtonGlow-1.0\LibButtonGlow-1.0.lua

@@ -92,10 +92,10 @@ end
 ------------------------------------------------------------
 local function UpdateActionBars()
     if NextUp_SavedVariables.settings.hideActionBar1 then
-        local bar = MainMenuBar
+        local bar = Actionbar1
         bar:SetAlpha(0)
     else
-        local bar = MainMenuBar
+        local bar = Actionbar1
         bar:SetAlpha(1)        
     end
 

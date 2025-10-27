@@ -16,7 +16,7 @@ Installation via an addon manager is recommended. However, you may install direc
 Just install and you're good to go. If WoW's Assisted Highlight feature is not enabled, you'll be prompted to turn it on.
 
 ## Configuration
-Options for look and feel. Optionally hide action bars to declutter the interface. More options on the way!
+Access some settings for look and feel under Options->Addons.
 
 ## Need Help or need to report a bug?
 Head on over to our [**Github issues**](https://github.com/pande2929/OBC/issues) page.

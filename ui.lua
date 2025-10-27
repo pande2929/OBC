@@ -74,8 +74,11 @@ local function CreateHighlightFrame()
 	-- Tooltip handlers
 	highlightFrame:SetScript("OnEnter", function(self)
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-    	GameTooltip:SetSpellByID(ns.recSpellID)
-    	GameTooltip:Show()
+
+		if ns.recSpellID then
+    		GameTooltip:SetSpellByID(ns.recSpellID)
+    		GameTooltip:Show()
+		end
 	end)
 	highlightFrame:SetScript("OnLeave", function(self)
 		GameTooltip:Hide()

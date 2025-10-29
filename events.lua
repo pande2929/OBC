@@ -37,6 +37,19 @@ function ns:RegisterEvents()
     c:RegisterEvent("PLAYER_REGEN_ENABLED")
     c:SetScript("OnEvent", OnLeaveCombat)
 
+	-- Track specialization changed
+	-- Necessary since I'm currently seeing an issue where assisted highlight needs to be disabled and re-enabled.
+	local n = CreateFrame("Frame")
+	n:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
+	n:SetScript("OnEvent", function(self, event, unit)
+		if unit == "player" then
+			SetCVar("assistedCombatHighlight", false)
+			C_Timer.After(2, function()
+				SetCVar("assistedCombatHighlight", true)
+			end)
+		end
+	end)
+
 	-- Track when assisted highlight button changes.
 	EventRegistry:RegisterCallback("AssistedCombatManager.OnAssistedHighlightSpellChange", OnSpellChange)
 

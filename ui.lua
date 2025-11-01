@@ -124,6 +124,23 @@ end
 local function CreateSettingsFrame()
 	local category = Settings.RegisterVerticalLayoutCategory(ns.name)
 
+	-- Enable / disable addon for this character
+    do 
+        local name = "Enabled"
+        local variable = "Enabled"
+        local variableKey = "enabled"
+        local variableTbl = NextUp_CharVariables
+        local defaultValue = true
+
+        local setting = Settings.RegisterAddOnSetting(category, variable, variableKey, variableTbl, type(defaultValue), name, defaultValue)
+        setting:SetValueChangedCallback(ns.OnSettingChanged)
+
+        local tooltip = "Enable or disable the highlight frame for this character."
+        Settings.CreateCheckbox(category, setting, tooltip)
+    end
+
+	Settings.RegisterAddOnCategory(category)
+
 	-- Anchor Point
 	do
 		local variable = "Anchor Point"

@@ -172,8 +172,10 @@ login:RegisterEvent("PLAYER_LOGIN")
 
 login:SetScript("OnEvent", function(_, event, arg1)
 	if event == "PLAYER_LOGIN" then
-		-- Load or initialize database
+		-- Load or initialize databases
 		NextUp_SavedVariables = NextUp_SavedVariables or {}
+		NextUp_CharVariables = NextUp_CharVariables or {}
+
 		if not NextUp_SavedVariables.settings then
 			NextUp_SavedVariables.settings = {
 				fontSize = 35,
@@ -191,6 +193,10 @@ login:SetScript("OnEvent", function(_, event, arg1)
                 hideActionBar2 = false,
                 hideActionBar3 = false
 			}
+		end
+
+		if not NextUp_CharVariables then
+			NextUp_CharVariables.enabled = true
 		end
 
 		--print(ns.name .. " settings initialized.")

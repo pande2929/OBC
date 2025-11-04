@@ -126,7 +126,7 @@ local function CreateSettingsFrame()
 
 	-- Enable / disable addon for this character
     do 
-        local name = "Enabled"
+        local name = "Enabled - " .. UnitName("player")
         local variable = "Enabled"
         local variableKey = "enabled"
         local variableTbl = NextUp_CharVariables
@@ -135,11 +135,9 @@ local function CreateSettingsFrame()
         local setting = Settings.RegisterAddOnSetting(category, variable, variableKey, variableTbl, type(defaultValue), name, defaultValue)
         setting:SetValueChangedCallback(ns.OnSettingChanged)
 
-        local tooltip = "Enable or disable the highlight frame for this character."
+        local tooltip = "Enable or disable the highlight frame for current character."
         Settings.CreateCheckbox(category, setting, tooltip)
     end
-
-	Settings.RegisterAddOnCategory(category)
 
 	-- Anchor Point
 	do

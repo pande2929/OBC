@@ -2,6 +2,7 @@
 
 local ns = NextUp
 local lastCastSpell = 0
+local lastButton = nil
 
 ------------------------------------------------------------
 -- Function: When assisted highlight spell changes.
@@ -21,11 +22,9 @@ end
 -- Function: When player leaves combat.
 ------------------------------------------------------------
 local function OnLeaveCombat()
-    if event == "PLAYER_REGEN_ENABLED" then
-        if ns.dirtyUI then
-            ns:RefreshUI()
-        end
-    end
+	if ns.dirtyUI then
+		ns:RefreshUI()
+	end
 end
 
 ------------------------------------------------------------
@@ -58,6 +57,20 @@ function ns:RegisterEvents()
         local actionType, id = GetActionInfo(slot)
 
         if id then
+			--[[
+			lastButton = ns:GetActionButtonBySlot(slot)
+			local cd = lastButton.cooldown
+			cd:HookScript("OnShow", function()
+				local start, duration = cd:GetCooldownTimes()
+				print(issecretvalue(duration))
+				--ns:ShowCooldownAnimation(start, duration / 1000.0)
+			end)
+
+			cd:HookScript("OnHide", function()
+				--dst:Hide()
+			end)
+			]]
+
             lastCastSpell = id
         end
     end)
@@ -80,6 +93,16 @@ function ns:RegisterEvents()
 			end
 		end)
 	end
+
+	-- Create GCD listener
+	--[[
+	local g = CreateFrame("Frame")
+	g:RegisterEvent("SPELL_UPDATE_COOLDOWN")
+	g:SetScript("OnEvent", function(self, event, spellID, baseSpellID)
+		local spInfo = C_Spell.GetSpellInfo(spellID)
+		print(spInfo.name)
+	end)
+	]]
 
 	-- Create listeners for casting events.
 	local f = CreateFrame("Frame")
@@ -108,6 +131,7 @@ function ns:RegisterEvents()
 			ns:ShowCooldownAnimation(startTime, spInfo.castTime / 1000.0)
 		elseif event == "UNIT_SPELLCAST_SUCCEEDED" then
 			local _, _, _, startTimeMS, endTimeMS = UnitChannelInfo("player")
+
 			-- Check for empowered and channeled casts. Otherwise proceed.
 			if startTimeMS == nil and endTimeMS == nill and lastCastSpell == spellID then
 				-- Nope, just a regular instant cast
@@ -128,12 +152,12 @@ function ns:RegisterEvents()
 			ns:ShowCooldownAnimation(0, 0)
         end
 	end)
-
 end
 
 ------------------------------------------------------------
 -- Tooltip event handler.
 ------------------------------------------------------------
+--[[
 function ns:OnEnter(self, event)
 	print(self)
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
@@ -147,6 +171,7 @@ end
 function ns:OnLeave(self, event)
 	GameTooltip:Hide()
 end
+]]
 
 ------------------------------------------------------------
 -- Function: Fires when a setting is changed.
@@ -179,7 +204,7 @@ login:SetScript("OnEvent", function(_, event, arg1)
 			NextUp_SavedVariables.settings = {
 				fontSize = 35,
 				offsetX = 0,
-				offsetY = -180,
+				offsetY = -140,
 				sizeX = 62,
 				sizeY = 62,
 				buttonScale = 1.0,

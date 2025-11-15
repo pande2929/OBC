@@ -58,7 +58,7 @@ local function CreateHighlightFrame()
     highlightFrame = CreateFrame("Frame", nil, UIParent, "BackdropTemplate")
 	highlightFrame:SetBackdrop(backdropInfo)
 	highlightFrame:SetBackdropColor(0.2, 0.2, 0.2, 0)
-	highlightFrame:SetBackdropBorderColor(0.2, 0.2, 0.2, 0	)
+	highlightFrame:SetBackdropBorderColor(0.2, 0.2, 0.2, 0)
 
     -- Text
 	highlightFrame.highlightText = highlightFrame:CreateFontString(nil, "OVERLAY", "NumberFontNormal")
@@ -92,10 +92,10 @@ end
 ------------------------------------------------------------
 local function UpdateActionBars()
     if NextUp_SavedVariables.settings.hideActionBar1 then
-        local bar = MainMenuBar
+        local bar = MainActionBar
         bar:SetAlpha(0)
     else
-        local bar = MainMenuBar
+        local bar = MainActionBar
         bar:SetAlpha(1)        
     end
 
@@ -219,7 +219,7 @@ local function CreateSettingsFrame()
 	do
 		local name = "Offset Y"
 		local variable = "Offset Y"
-		local defaultValue = -180
+		local defaultValue = -140
 		local minValue = -300
 		local maxValue = 300
 		local step = 5
@@ -527,6 +527,7 @@ end
 ------------------------------------------------------------
 -- Function: Checks if currently playing CD animation.
 ------------------------------------------------------------
+--[[
 local function IsCooldownActive()
 	local frame = highlightFrame
 
@@ -538,6 +539,7 @@ local function IsCooldownActive()
 	-- cooldown is active when duration is ~0 and ~1000
 	return duration ~= 0 and duration ~= 1000
 end
+]]
 
 ------------------------------------------------------------
 -- Function: Show a cooldown animation.
@@ -546,8 +548,10 @@ function ns:ShowCooldownAnimation(startTime, duration)
 	-- Clear existing animation
 	highlightFrame.cooldown:SetCooldown(0, 0)
 	
-	-- test for nil, but also only do the animation if the duration isn't 0
-	if startTime and duration and duration > 0 then
+	-- test for nil
+	-- we don't want this to fire when duration is 0
+	-- Display a cooldown animation.
+	if startTime and duration  then
 		highlightFrame.cooldown:SetCooldown(startTime, duration)
 	end
 end
@@ -555,14 +559,6 @@ end
 ------------------------------------------------------------
 -- Function: Update the main frame.
 ------------------------------------------------------------
---[[
-function ns:UpdateHighlightFrame(texture, text)
-    highlightFrame.tex:SetTexture(texture)
-    highlightFrame.highlightText:SetText(text)
-	highlightFrame:SetBackdropColor(0.2, 0.2, 0.2, 1)
-	highlightFrame:SetBackdropBorderColor(0.2, 0.2, 0.2, 1)
-end
-]]
 function ns:UpdateHighlightFrame(button)
 	if not ns.recSpellID then return end
 
@@ -625,7 +621,7 @@ function ns:ApplyDimEffect(show)
 	--print(show and not IsCooldownActive())
 	--show = show and not IsCooldownActive()
 
-	local cooldown = IsCooldownActive()
+	--local cooldown = IsCooldownActive()
 
     --if show == true and cooldown == false then
 	if show then

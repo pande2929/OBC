@@ -25,6 +25,20 @@ local actionBarPrefixMatrix = {
 	["MultiBar7Button"] = "MULTIACTIONBAR7BUTTON",
 }
 
+function ns:GetActionButtonBySlot(slotID)
+	for _, barPrefix in pairs(actionBarPrefixes) do
+		for i = 1, 12 do
+			local button = _G[barPrefix .. i]
+
+			if button then
+				if (button.action == slotID) then
+					return button
+				end
+			end
+		end
+	end
+end
+
 ------------------------------------------------------------
 -- Function: Get the currently highlighted button
 ------------------------------------------------------------
@@ -127,9 +141,9 @@ function ns:IsSpellReady(spellID)
     end
 
     local cdInfo = C_Spell.GetSpellCooldown(spellID)
-    if cdInfo.startTime == 0 then
-        return true
-    end
+    --if cdInfo.startTime == 0 then
+    --    return true
+    --end
 
     -- Still on cooldown
     return false

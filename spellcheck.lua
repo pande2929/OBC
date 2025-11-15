@@ -11,7 +11,8 @@ local effectTicker = C_Timer.NewTicker(0.1, function()
     end
 
     -- Spell ready?
-    local isReady = ns:IsSpellReady(spellID)
+    --local isReady = ns:IsSpellReady(spellID)
+    isReady = true
 
     -- Target in range?
     local inRange = true
@@ -39,7 +40,6 @@ local effectTicker = C_Timer.NewTicker(0.1, function()
         ns:ApplyDimEffect(false)
     end
 end)
-
 
 local verifyTicker = C_Timer.NewTicker(1, function()
     local button = ns:GetHighlightedButton()

@@ -37,6 +37,19 @@ function ns:RegisterEvents()
     c:RegisterEvent("PLAYER_REGEN_ENABLED")
     c:SetScript("OnEvent", OnLeaveCombat)
 
+	-- Track specialization changed
+	-- Necessary since I'm currently seeing an issue where assisted highlight needs to be disabled and re-enabled.
+	local n = CreateFrame("Frame")
+	n:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
+	n:SetScript("OnEvent", function(self, event, unit)
+		if unit == "player" then
+			SetCVar("assistedCombatHighlight", false)
+			C_Timer.After(2, function()
+				SetCVar("assistedCombatHighlight", true)
+			end)
+		end
+	end)
+
 	-- Track when assisted highlight button changes.
 	EventRegistry:RegisterCallback("AssistedCombatManager.OnAssistedHighlightSpellChange", OnSpellChange)
 
@@ -159,8 +172,9 @@ login:RegisterEvent("PLAYER_LOGIN")
 
 login:SetScript("OnEvent", function(_, event, arg1)
 	if event == "PLAYER_LOGIN" then
-		-- Load or initialize database
+		-- Load or initialize databases
 		NextUp_SavedVariables = NextUp_SavedVariables or {}
+
 		if not NextUp_SavedVariables.settings then
 			NextUp_SavedVariables.settings = {
 				fontSize = 35,
@@ -176,7 +190,8 @@ login:SetScript("OnEvent", function(_, event, arg1)
 				showOverlayGlow = false,
                 hideActionBar1 = false,
                 hideActionBar2 = false,
-                hideActionBar3 = false
+                hideActionBar3 = false,
+				enabled = true
 			}
 		end
 

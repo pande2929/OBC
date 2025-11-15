@@ -12,5 +12,4 @@ events.lua
 ui.lua
 spellcheck.lua
 
-## SavedVariables: NextUp_SavedVariables
-## SavedVariablesPerCharacter: NextUp_CharVariables
+## SavedVariablesPerCharacter: NextUp_SavedVariables

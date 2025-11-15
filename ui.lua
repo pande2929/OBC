@@ -129,7 +129,7 @@ local function CreateSettingsFrame()
         local name = "Enabled - " .. UnitName("player")
         local variable = "Enabled"
         local variableKey = "enabled"
-        local variableTbl = NextUp_CharVariables
+        local variableTbl = NextUp_SavedVariables.settings
         local defaultValue = true
 
         local setting = Settings.RegisterAddOnSetting(category, variable, variableKey, variableTbl, type(defaultValue), name, defaultValue)

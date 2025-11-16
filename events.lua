@@ -3,6 +3,7 @@
 local ns = NextUp
 local lastCastSpell = 0
 local lastButton = nil
+ns.recSpellID = nil
 
 ------------------------------------------------------------
 -- Function: When assisted highlight spell changes.
@@ -54,28 +55,33 @@ function ns:RegisterEvents()
 
     -- Track whenever player uses an ability.
     hooksecurefunc("UseAction", function(slot, checkCursor, onSelf)
-        local actionType, id = GetActionInfo(slot)
+        local actionType, spellID = GetActionInfo(slot)
+		local startTime = GetTime()
+		local duration = 0
 
-        if id then
-			--[[
-			lastButton = ns:GetActionButtonBySlot(slot)
-			local cd = lastButton.cooldown
-			cd:HookScript("OnShow", function()
-				local start, duration = cd:GetCooldownTimes()
-				print(issecretvalue(duration))
-				--ns:ShowCooldownAnimation(start, duration / 1000.0)
-			end)
+        if spellID then
+			-- Get spell info
+			local spInfo = C_Spell.GetSpellInfo(spellID)
 
-			cd:HookScript("OnHide", function()
-				--dst:Hide()
-			end)
-			]]
+			if spInfo then
+				if spInfo.castTime == 0 then
+					-- Instant cast, check if on GCD
+					if ns:IsSpellOnGCD(spellID) then
+						local cdInfo = C_Spell.GetSpellCooldown(61304)
+						duration = cdInfo.duration
+						ns:ShowCooldownAnimation(startTime, duration)
+					end
+				end
+			end
 
-            lastCastSpell = id
+			-- Show the cooldown animation
+			--ns:ShowCooldownAnimation(startTime, duration)
+            lastCastSpell = spellID
         end
     end)
 
 	-- Create listeners for spell activation events
+	--[[
 	if NextUp_SavedVariables.settings.showOverlayGlow then
 		local s = CreateFrame("Frame")
 		s:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_SHOW")
@@ -93,16 +99,20 @@ function ns:RegisterEvents()
 			end
 		end)
 	end
-
-	-- Create GCD listener
-	--[[
-	local g = CreateFrame("Frame")
-	g:RegisterEvent("SPELL_UPDATE_COOLDOWN")
-	g:SetScript("OnEvent", function(self, event, spellID, baseSpellID)
-		local spInfo = C_Spell.GetSpellInfo(spellID)
-		print(spInfo.name)
-	end)
 	]]
+
+	-- Listen for spell readiness updates
+	local g = CreateFrame("Frame")
+	g:RegisterEvent("ACTIONBAR_UPDATE_USABLE")
+	g:SetScript("OnEvent", function(self, event)
+		-- If no suggested spell, ensure no dim effect is applied.
+		if ns.recSpellID == nil then
+			ns:ApplyDimEffect(false)
+			return
+		end
+
+		ns:ApplyDimEffect(not ns:IsSpellReady(spellID))
+	end)
 
 	-- Create listeners for casting events.
 	local f = CreateFrame("Frame")
@@ -135,8 +145,15 @@ function ns:RegisterEvents()
 			-- Check for empowered and channeled casts. Otherwise proceed.
 			if startTimeMS == nil and endTimeMS == nill and lastCastSpell == spellID then
 				-- Nope, just a regular instant cast
-				local cdInfo = C_Spell.GetSpellCooldown(61304)
-				ns:ShowCooldownAnimation(startTime, cdInfo.duration)
+				--local cdInfo = C_Spell.GetSpellCooldown(61304)
+				--ns:ShowCooldownAnimation(startTime, cdInfo.duration)
+				--ns:ShowCooldownAnimation(startTime, "1.3")
+
+				-- check if spell is on GCD or a skyriding ability
+				if ns:IsSpellOnGCD(spellID) then
+					--local cdInfo = C_Spell.GetSpellCooldown(61304)
+					--ns:ShowCooldownAnimation(startTime, cdInfo.duration)
+				end
 			end
         elseif event == "UNIT_SPELLCAST_CHANNEL_START" or event == "UNIT_SPELLCAST_EMPOWER_START" then
 			local _, _, _, startTimeMS, endTimeMS = UnitChannelInfo("player")
@@ -216,6 +233,7 @@ login:SetScript("OnEvent", function(_, event, arg1)
                 hideActionBar1 = false,
                 hideActionBar2 = false,
                 hideActionBar3 = false,
+				hideCastbar = false,
 				enabled = true
 			}
 		end

@@ -72,6 +72,7 @@ local function CreateHighlightFrame()
     highlightFrame.cooldown:SetPoint("BOTTOMRIGHT", highlightFrame, "BOTTOMRIGHT", -2, 2)
 
 	-- Tooltip handlers
+	--[[
 	highlightFrame:SetScript("OnEnter", function(self)
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
 
@@ -83,6 +84,7 @@ local function CreateHighlightFrame()
 	highlightFrame:SetScript("OnLeave", function(self)
 		GameTooltip:Hide()
 	end)
+	]]
 
     RedrawHighlightFrame()
 end
@@ -114,6 +116,17 @@ local function UpdateActionBars()
         local bar = MultiBarBottomRight
         bar:SetAlpha(1)        
     end
+
+	--[[
+	if NextUp_SavedVariables.settings.hideCastbar then
+		local castBar = PlayerCastingBarFrame
+		--castBar:SetAlpha(0)
+		castBar:UnregisterAllEvents()
+	else
+		local castBar = PlayerCastingBarFrame
+		--castBar:SetAlpha(1)
+	end
+	]]
 
     ns.dirtyUI = false
 end
@@ -461,6 +474,7 @@ local function CreateSettingsFrame()
 	end
 
 	-- Show/hide Overlay Glow
+	--[[
     do 
         local name = "Show Ability Procs"
         local variable = "Show_OverlayGlow"
@@ -474,6 +488,7 @@ local function CreateSettingsFrame()
         local tooltip = "Show or hide ability procs."
         Settings.CreateCheckbox(category, setting, tooltip)
     end
+	]]
 
     -- Hide action bar 1
     do 
@@ -520,26 +535,25 @@ local function CreateSettingsFrame()
         Settings.CreateCheckbox(category, setting, tooltip)
     end
 
+	-- Hide cast bar
+	--[[
+	do
+		local name = "Hide Default Castbar"
+		local variable = "Hide_Castbar"
+		local variableKey = "hideCastbar"
+		local variableTbl = NextUp_SavedVariables.settings
+		local defaultValue = false
+
+        local setting = Settings.RegisterAddOnSetting(category, variable, variableKey, variableTbl, type(defaultValue), name, defaultValue)
+        setting:SetValueChangedCallback(ns.OnSettingChanged)
+
+        local tooltip = "Show or hide the default castbar."
+        Settings.CreateCheckbox(category, setting, tooltip)
+	end
+	]]
+
 	Settings.RegisterAddOnCategory(category)
 end
-
-
-------------------------------------------------------------
--- Function: Checks if currently playing CD animation.
-------------------------------------------------------------
---[[
-local function IsCooldownActive()
-	local frame = highlightFrame
-
-    if not frame or not frame.cooldown.GetCooldownTimes then return false end
-
-    local start, duration = frame.cooldown:GetCooldownTimes()
-	--print(start, duration)
-	
-	-- cooldown is active when duration is ~0 and ~1000
-	return duration ~= 0 and duration ~= 1000
-end
-]]
 
 ------------------------------------------------------------
 -- Function: Show a cooldown animation.
@@ -547,11 +561,11 @@ end
 function ns:ShowCooldownAnimation(startTime, duration)
 	-- Clear existing animation
 	highlightFrame.cooldown:SetCooldown(0, 0)
-	
+
 	-- test for nil
 	-- we don't want this to fire when duration is 0
 	-- Display a cooldown animation.
-	if startTime and duration  then
+	if startTime and duration and ns.recSpellID and ns.recSpellID > 0 then
 		highlightFrame.cooldown:SetCooldown(startTime, duration)
 	end
 end
@@ -560,15 +574,24 @@ end
 -- Function: Update the main frame.
 ------------------------------------------------------------
 function ns:UpdateHighlightFrame(button)
-	if not ns.recSpellID then return end
+	if not ns.recSpellID or not button then 
+		-- Clear everything if this got called with nil values
+		highlightFrame.tex:SetTexture(nil)
+		highlightFrame.highlightText:SetText(nil)
+		highlightFrame:SetBackdropColor(0.2, 0.2, 0.2, 0)
+		highlightFrame:SetBackdropBorderColor(0.2, 0.2, 0.2, 0)
+		return 
+	end
 
 	local tex = C_Spell.GetSpellTexture(ns.recSpellID)
 	
 	-- Check if glowing
+	--[[
 	if NextUp_SavedVariables.settings.showOverlayGlow then
 		local glowing = C_SpellActivationOverlay.IsSpellOverlayed(spellID)
 		ns:ShowOverlayGlow(glowing)
 	end
+	]]
 
 	local keybind = ns:GetKeybinds(button)
 
@@ -612,18 +635,6 @@ function ns:ApplyDimEffect(show)
         frame.dimOverlay = tex
     end
 
-	-- When to apply dim effect?
-	-- spell is ready (show == true)
-	-- cooldown animation is NOT playing (IsCooldownActive == false)
-	-- show == true and IsCooldownActive == false
-
-	--print(show, not IsCooldownActive())
-	--print(show and not IsCooldownActive())
-	--show = show and not IsCooldownActive()
-
-	--local cooldown = IsCooldownActive()
-
-    --if show == true and cooldown == false then
 	if show then
         frame.dimOverlay:Show()
     else
@@ -641,12 +652,19 @@ function ns:ApplyRedShift(show)
 
     local frame = highlightFrame
 
+    if not frame.redOverlay then
+        local tex = frame:CreateTexture(nil, "OVERLAY")
+        tex:SetAllPoints()
+        tex:SetColorTexture(0.5, 0, 0, 0.7)
+        frame.redOverlay = tex
+    end
+
     if show then
-        --frame.redOverlay:Show()
-		frame.highlightText:SetTextColor(1, 0, 0)
+        frame.redOverlay:Show()
+		--frame.highlightText:SetTextColor(1, 0, 0)
     else
-        --frame.redOverlay:Hide()
-		frame.highlightText:SetTextColor(1, 1, 1)
+        frame.redOverlay:Hide()
+		--frame.highlightText:SetTextColor(1, 1, 1)
     end
 end
 

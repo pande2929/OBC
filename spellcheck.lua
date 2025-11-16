@@ -3,16 +3,14 @@
 local ns = NextUp
 
 -- Periodically update the main frame with effects.
-local effectTicker = C_Timer.NewTicker(0.1, function()
+-- TODO: Move spell ready check into ACTIONBAR_UPDATE_USABLE
+local effectTicker = C_Timer.NewTicker(0.15, function()
     local spellID = ns.recSpellID
 
     if not spellID then
+        --ns:ApplyDimEffect(false)
         return
     end
-
-    -- Spell ready?
-    --local isReady = ns:IsSpellReady(spellID)
-    isReady = true
 
     -- Target in range?
     local inRange = true
@@ -27,28 +25,22 @@ local effectTicker = C_Timer.NewTicker(0.1, function()
     else
         ns:ApplyRedShift(false)
     end
-
-    -- Apply dim overlay
-    -- spell is not ready
-    -- is out of range
-
-    if isReady == false then
-        ns:ApplyDimEffect(true)
-    elseif inRange == false then
-        ns:ApplyDimEffect(true)
-    else
-        ns:ApplyDimEffect(false)
-    end
 end)
 
+-- Check if ns.recSpellID is currently selected, if not then update it.
+-- This is sort of a failsafe for weird situations.
 local verifyTicker = C_Timer.NewTicker(1, function()
     local button = ns:GetHighlightedButton()
-	local spellID = ns:GetSpellIDFromButton(button)
+	
+    if button then -- this will be nil if nothing is highlighted
+        local spellID = ns:GetSpellIDFromButton(button)
 
-    -- Check if ns.recSpellID is currently selected, if not then update it.
-    
-    if spellID and spellID ~= ns.recSpellID then
-        ns.recSpellID = spellID
-        ns:UpdateHighlightFrame(button)
+        if spellID and spellID ~= ns.recSpellID then
+            ns.recSpellID = spellID
+            ns:UpdateHighlightFrame(button)
+        end
+    else
+        ns.recSpellID = nil
+        ns:UpdateHighlightFrame(nil)
     end
 end)

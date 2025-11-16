@@ -25,6 +25,7 @@ local actionBarPrefixMatrix = {
 	["MultiBar7Button"] = "MULTIACTIONBAR7BUTTON",
 }
 
+--[[
 function ns:GetActionButtonBySlot(slotID)
 	for _, barPrefix in pairs(actionBarPrefixes) do
 		for i = 1, 12 do
@@ -38,6 +39,7 @@ function ns:GetActionButtonBySlot(slotID)
 		end
 	end
 end
+]]
 
 ------------------------------------------------------------
 -- Function: Get the currently highlighted button
@@ -140,13 +142,7 @@ function ns:IsSpellReady(spellID)
         return false
     end
 
-    local cdInfo = C_Spell.GetSpellCooldown(spellID)
-    --if cdInfo.startTime == 0 then
-    --    return true
-    --end
-
-    -- Still on cooldown
-    return false
+    return true
 end
 
 ------------------------------------------------------------
@@ -154,4 +150,13 @@ end
 ------------------------------------------------------------
 function ns:IsRecommendedSpell(spellID)
 	return ns.recSpellID == spellID
+end
+
+
+------------------------------------------------------------
+-- Function: Checks if the spell is on the GCD.
+------------------------------------------------------------
+function ns:IsSpellOnGCD(spellID)
+	local _, gcdMS = GetSpellBaseCooldown(spellID)
+	return gcdMS ~= 0
 end

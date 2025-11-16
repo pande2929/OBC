@@ -4,9 +4,6 @@ local addonName, ns = ...
 NextUp = ns
 NextUp.name = "NextUp"
 
--- TODO:
--- Dim abilities that are not ready yet.
-
 ------------------------------------------------------------
 -- Function: Initialize the addon
 ------------------------------------------------------------

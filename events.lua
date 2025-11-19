@@ -15,6 +15,9 @@ local function OnSpellChange()
 
 	if spellID then
 		ns.recSpellID = spellID
+
+		ns:ApplyDimEffect(not ns:IsSpellReady(spellID))
+
 		ns:UpdateHighlightFrame(button)
 	end
 end
@@ -61,18 +64,20 @@ function ns:RegisterEvents()
 
         if spellID then
 			-- Get spell info
+			--[[
 			local spInfo = C_Spell.GetSpellInfo(spellID)
 
 			if spInfo then
 				if spInfo.castTime == 0 then
-					-- Instant cast, check if on GCD
-					if ns:IsSpellOnGCD(spellID) then
+					-- Instant cast, check if on GCD and a target exists
+					if ns:IsSpellOnGCD(spellID) and UnitExists("target") then
 						local cdInfo = C_Spell.GetSpellCooldown(61304)
 						duration = cdInfo.duration
 						ns:ShowCooldownAnimation(startTime, duration)
 					end
 				end
 			end
+			]]
 
 			-- Show the cooldown animation
 			--ns:ShowCooldownAnimation(startTime, duration)
@@ -111,6 +116,9 @@ function ns:RegisterEvents()
 			return
 		end
 
+		local spellID = ns.recSpellID
+
+		local spInfo = C_Spell.GetSpellInfo(spellID)
 		ns:ApplyDimEffect(not ns:IsSpellReady(spellID))
 	end)
 
@@ -132,34 +140,33 @@ function ns:RegisterEvents()
 		if unit ~= "player" then
 			return
 		end
-
-		local startTime = GetTime()
-
+		
 		-- Show the cooldown animation with duration of spell, otherwise use GCD for instant casts.
 		if event == "UNIT_SPELLCAST_START" then
-			local spInfo = C_Spell.GetSpellInfo(spellID)
-			ns:ShowCooldownAnimation(startTime, spInfo.castTime / 1000.0)
+			--local spInfo = C_Spell.GetSpellInfo(spellID)
+			--ns:ShowCooldownAnimation(startTime, spInfo.castTime / 1000.0)
+			local _, _, _, startTimeMS, endTimeMS = UnitCastingInfo("player")
+			
+			if startTimeMS and endTimeMS then
+				ns:ShowCooldownAnimation(startTimeMS / 1000.0, (endTimeMS - startTimeMS) / 1000.0)
+			end
 		elseif event == "UNIT_SPELLCAST_SUCCEEDED" then
 			local _, _, _, startTimeMS, endTimeMS = UnitChannelInfo("player")
 
 			-- Check for empowered and channeled casts. Otherwise proceed.
 			if startTimeMS == nil and endTimeMS == nill and lastCastSpell == spellID then
 				-- Nope, just a regular instant cast
-				--local cdInfo = C_Spell.GetSpellCooldown(61304)
-				--ns:ShowCooldownAnimation(startTime, cdInfo.duration)
-				--ns:ShowCooldownAnimation(startTime, "1.3")
-
-				-- check if spell is on GCD or a skyriding ability
+				-- check if spell is on GCD
 				if ns:IsSpellOnGCD(spellID) then
-					--local cdInfo = C_Spell.GetSpellCooldown(61304)
-					--ns:ShowCooldownAnimation(startTime, cdInfo.duration)
+					local cdInfo = C_Spell.GetSpellCooldown(61304)
+					ns:ShowCooldownAnimation(cdInfo.startTime, cdInfo.duration)
 				end
 			end
         elseif event == "UNIT_SPELLCAST_CHANNEL_START" or event == "UNIT_SPELLCAST_EMPOWER_START" then
 			local _, _, _, startTimeMS, endTimeMS = UnitChannelInfo("player")
 
             if startTimeMS and endTimeMS then
-			    ns:ShowCooldownAnimation(startTime, (endTimeMS - startTimeMS) / 1000.0)
+			    ns:ShowCooldownAnimation(startTimeMS / 1000.0, (endTimeMS - startTimeMS) / 1000.0)
 		    end
 		elseif
 			event == "UNIT_SPELLCAST_INTERRUPTED" or 

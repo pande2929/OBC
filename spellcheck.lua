@@ -8,7 +8,8 @@ local effectTicker = C_Timer.NewTicker(0.15, function()
     local spellID = ns.recSpellID
 
     if not spellID then
-        --ns:ApplyDimEffect(false)
+        ns:ApplyDimEffect(false)
+        ns:ApplyRedShift(false)
         return
     end
 
@@ -28,7 +29,7 @@ local effectTicker = C_Timer.NewTicker(0.15, function()
 end)
 
 -- Check if ns.recSpellID is currently selected, if not then update it.
--- This is sort of a failsafe for weird situations.
+-- This is sort of a failsafe for uncommon situations.
 local verifyTicker = C_Timer.NewTicker(1, function()
     local button = ns:GetHighlightedButton()
 	

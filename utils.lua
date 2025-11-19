@@ -136,6 +136,8 @@ end
 -- Function: Checks if spell is ready or not.
 ------------------------------------------------------------
 function ns:IsSpellReady(spellID)
+	if not spellID then return false end
+
     local isUsable, insufficientPower = C_Spell.IsSpellUsable(spellID)
 
     if not isUsable or insufficientPower then

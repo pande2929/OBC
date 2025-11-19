@@ -226,7 +226,7 @@ login:SetScript("OnEvent", function(_, event, arg1)
 
 		if not NextUp_SavedVariables.settings then
 			NextUp_SavedVariables.settings = {
-				fontSize = 35,
+				fontSize = 40,
 				offsetX = 0,
 				offsetY = -140,
 				sizeX = 62,

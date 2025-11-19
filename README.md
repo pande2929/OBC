@@ -1,9 +1,11 @@
 # NextUp
 
 ## Overview
-NextUp is a lightweight addon that makes Blizzard's Assisted Highlight feature less clunky to use. Rather than requiring you to search your action bars for the next suggested ability, it's displayed right where you want it.
+NextUp is a lightweight addon that brings the current ability suggested by Blizzard's Assisted Highlight feature front and center to your view (or wherever you wish it to be).
 
-This addon aims to be Midnight ready by only customizing the look and feel of an existing in-game feature rather than tapping into the combat log.
+For those who like a more trimmed down UI, NextUp can optionally hide action bars.
+
+Note: This addon is currently only compatible with Midnight Beta, but a non-beta version will be released when the Midnight expansion is also released.
 
 ## Getting Started
 
@@ -13,7 +15,7 @@ Installation via an addon manager is recommended. However, you may install direc
 [**CurseForge**](https://www.curseforge.com/download), [**WowUp**](https://wowup.io/)
 
 ### Setup
-Just install and you're good to go. If WoW's Assisted Highlight feature is not enabled, you'll be prompted to turn it on.
+Just install and you're good to go. If Blizzard's Assisted Highlight feature is not enabled, you'll be prompted to turn it on.
 
 ## Configuration
 Access some settings for look and feel under Options->Addons.

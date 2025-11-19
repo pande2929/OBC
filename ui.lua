@@ -574,6 +574,8 @@ end
 -- Function: Update the main frame.
 ------------------------------------------------------------
 function ns:UpdateHighlightFrame(button)
+	if not highlightFrame then return end
+
 	if not ns.recSpellID or not button then 
 		-- Clear everything if this got called with nil values
 		highlightFrame.tex:SetTexture(nil)

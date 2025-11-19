@@ -17,7 +17,6 @@ local function OnSpellChange()
 		ns.recSpellID = spellID
 
 		ns:ApplyDimEffect(not ns:IsSpellReady(spellID))
-
 		ns:UpdateHighlightFrame(button)
 	end
 end
@@ -63,24 +62,6 @@ function ns:RegisterEvents()
 		local duration = 0
 
         if spellID then
-			-- Get spell info
-			--[[
-			local spInfo = C_Spell.GetSpellInfo(spellID)
-
-			if spInfo then
-				if spInfo.castTime == 0 then
-					-- Instant cast, check if on GCD and a target exists
-					if ns:IsSpellOnGCD(spellID) and UnitExists("target") then
-						local cdInfo = C_Spell.GetSpellCooldown(61304)
-						duration = cdInfo.duration
-						ns:ShowCooldownAnimation(startTime, duration)
-					end
-				end
-			end
-			]]
-
-			-- Show the cooldown animation
-			--ns:ShowCooldownAnimation(startTime, duration)
             lastCastSpell = spellID
         end
     end)
@@ -177,25 +158,6 @@ function ns:RegisterEvents()
         end
 	end)
 end
-
-------------------------------------------------------------
--- Tooltip event handler.
-------------------------------------------------------------
---[[
-function ns:OnEnter(self, event)
-	print(self)
-	GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-    GameTooltip:SetSpellByID(ns.recSpellID)
-    GameTooltip:Show()
-end
-
-------------------------------------------------------------
--- Tooltip event handler.
-------------------------------------------------------------
-function ns:OnLeave(self, event)
-	GameTooltip:Hide()
-end
-]]
 
 ------------------------------------------------------------
 -- Function: Fires when a setting is changed.

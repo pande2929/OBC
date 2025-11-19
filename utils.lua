@@ -117,15 +117,10 @@ function ns:GetSpellIDFromButton(button)
 		if actionType == "spell" then
 			spellID = id
 		elseif actionType == "macro" and subType == "spell" then
-			-- macros can cast spells, so check the macro body
-			--local macroSpell = GetMacroSpell(id)
-			--return macroSpell
 			spellID = id
 		end
 	else
 		_, _, _, stanceSpellID = GetShapeshiftFormInfo(button:GetID())
-		--local spInfo = C_Spell.GetSpellInfo(stanceSpellID)
-		--print(spInfo.name)
 		spellID = stanceSpellID
 	end
 

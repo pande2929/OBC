@@ -18,6 +18,14 @@ local function OnSpellChange()
 
 		ns:ApplyDimEffect(not ns:IsSpellReady(spellID))
 		ns:UpdateHighlightFrame(button)
+
+		-- check if the ability currently is under a charge cooldown and then display it.
+		--local scInfo = C_Spell.GetSpellCharges(spellID)
+		--print(scInfo.currentCharges > 0)
+		--print(scInfo.cooldownStartTime, scInfo.cooldownDuration)
+		--if scInfo.cooldownStartTime > 0 then
+		--	ns:ShowCooldownAnimation(scInfo.cooldownStartTime, scInfo.cooldownDuration)
+		--end
 	end
 end
 
@@ -139,8 +147,20 @@ function ns:RegisterEvents()
 				-- Nope, just a regular instant cast
 				-- check if spell is on GCD
 				if ns:IsSpellOnGCD(spellID) then
+					local scInfo = C_Spell.GetSpellCharges(spellID)
+
 					local cdInfo = C_Spell.GetSpellCooldown(61304)
 					ns:ShowCooldownAnimation(cdInfo.startTime, cdInfo.duration)
+					
+					--[[
+					local cdSpellInfo = C_Spell.GetSpellCooldown(spellID)
+					local spellCharges = C_Spell.GetSpellCharges(spellID)
+					local spInfo = C_Spell.GetSpellInfo(spellID)
+					print(spInfo.name, spellCharges.cooldownDuration)
+					if spellCharges.cooldownDuration == 0 then
+						print("TEST")
+					end
+					]]
 				end
 			end
         elseif event == "UNIT_SPELLCAST_CHANNEL_START" or event == "UNIT_SPELLCAST_EMPOWER_START" then

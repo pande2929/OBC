@@ -5,7 +5,7 @@ NextUp is a lightweight addon that brings the current ability suggested by Blizz
 
 For those who like a more trimmed down UI, NextUp can optionally hide action bars.
 
-Note: This addon is currently only compatible with Midnight Beta, but a non-beta version will be released when the Midnight expansion is also released.
+Note: This addon is currently only compatible with Midnight Beta and is still in active development. A non-beta version will be released when the Midnight expansion is also released.
 
 ## Getting Started
 

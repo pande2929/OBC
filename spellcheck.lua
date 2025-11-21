@@ -3,7 +3,6 @@
 local ns = NextUp
 
 -- Periodically update the main frame with effects.
--- TODO: Move spell ready check into ACTIONBAR_UPDATE_USABLE
 local effectTicker = C_Timer.NewTicker(0.15, function()
     local spellID = ns.recSpellID
 

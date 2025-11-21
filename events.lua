@@ -18,14 +18,6 @@ local function OnSpellChange()
 
 		ns:ApplyDimEffect(not ns:IsSpellReady(spellID))
 		ns:UpdateHighlightFrame(button)
-
-		-- check if the ability currently is under a charge cooldown and then display it.
-		--local scInfo = C_Spell.GetSpellCharges(spellID)
-		--print(scInfo.currentCharges > 0)
-		--print(scInfo.cooldownStartTime, scInfo.cooldownDuration)
-		--if scInfo.cooldownStartTime > 0 then
-		--	ns:ShowCooldownAnimation(scInfo.cooldownStartTime, scInfo.cooldownDuration)
-		--end
 	end
 end
 
@@ -66,9 +58,6 @@ function ns:RegisterEvents()
     -- Track whenever player uses an ability.
     hooksecurefunc("UseAction", function(slot, checkCursor, onSelf)
         local actionType, spellID = GetActionInfo(slot)
-		local startTime = GetTime()
-		local duration = 0
-
         if spellID then
             lastCastSpell = spellID
         end
@@ -93,6 +82,21 @@ function ns:RegisterEvents()
 			end
 		end)
 	end
+	]]
+
+	--[[
+	local x = CreateFrame("Frame")
+	x:RegisterEvent("SPELL_UPDATE_CHARGES")
+	x:SetScript("OnEvent", function(self, event)
+		print(event)
+		local spellID = ns.recSpellID
+
+		local scInfo = C_Spell.GetSpellCharges(spellID)
+
+		if scInfo then
+			print(scInfo.currentCharges == 0)
+		end
+	end)
 	]]
 
 	-- Listen for spell readiness updates
@@ -132,8 +136,6 @@ function ns:RegisterEvents()
 		
 		-- Show the cooldown animation with duration of spell, otherwise use GCD for instant casts.
 		if event == "UNIT_SPELLCAST_START" then
-			--local spInfo = C_Spell.GetSpellInfo(spellID)
-			--ns:ShowCooldownAnimation(startTime, spInfo.castTime / 1000.0)
 			local _, _, _, startTimeMS, endTimeMS = UnitCastingInfo("player")
 			
 			if startTimeMS and endTimeMS then
@@ -146,6 +148,14 @@ function ns:RegisterEvents()
 			if startTimeMS == nil and endTimeMS == nill and lastCastSpell == spellID then
 				-- Nope, just a regular instant cast
 				-- check if spell is on GCD
+				--[[
+				local scInfo = C_Spell.GetSpellCharges(spellID)
+				if scInfo and scInfo.cooldownStartTime then
+					print(not scInfo.currentCharges, not not scInfo.currentCharges, scInfo.currentCharges)
+					--ns:ShowCooldownAnimation(scInfo.cooldownStartTime, scInfo.cooldownDuration)
+				end
+				]]
+
 				if ns:IsSpellOnGCD(spellID) then
 					local scInfo = C_Spell.GetSpellCharges(spellID)
 

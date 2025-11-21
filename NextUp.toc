@@ -4,8 +4,8 @@
 ## Version 0.3
 ## IconTexture: Interface\AddOns\NextUp\Textures\NextUp.tga
 
-libs\LibStub\LibStub.lua
-libs\LibButtonGlow-1.0\LibButtonGlow-1.0.lua
+#libs\LibStub\LibStub.lua
+#libs\LibButtonGlow-1.0\LibButtonGlow-1.0.lua
 core.lua
 utils.lua
 events.lua

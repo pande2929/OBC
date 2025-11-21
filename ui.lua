@@ -2,7 +2,7 @@
 
 local ns = NextUp
 local highlightFrame = nil
-local LBG = LibStub("LibButtonGlow-1.0")
+--local LBG = LibStub("LibButtonGlow-1.0")
 
 ------------------------------------------------------------
 -- Function: Updates the main frame.
@@ -22,7 +22,6 @@ local function RedrawHighlightFrame()
 		NextUp_SavedVariables.settings.offsetY
 	)
 	
-	--highlightFrame.tex:SetAllPoints(highlightFrame)
     highlightFrame.tex:SetPoint("TOPLEFT", highlightFrame, "TOPLEFT", 2, -2)
     highlightFrame.tex:SetPoint("BOTTOMRIGHT", highlightFrame, "BOTTOMRIGHT", -2, 2)
     highlightFrame.tex:SetTexCoord(0.06, 0.94, 0.06, 0.94)
@@ -138,6 +137,7 @@ local function CreateSettingsFrame()
 	local category = Settings.RegisterVerticalLayoutCategory(ns.name)
 
 	-- Enable / disable addon for this character
+	--[[
     do 
         local name = "Enabled - " .. UnitName("player")
         local variable = "Enabled"
@@ -151,6 +151,7 @@ local function CreateSettingsFrame()
         local tooltip = "Enable or disable the highlight frame for current character."
         Settings.CreateCheckbox(category, setting, tooltip)
     end
+	]]
 
 	-- Anchor Point
 	do

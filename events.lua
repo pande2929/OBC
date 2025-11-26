@@ -60,6 +60,8 @@ function ns:RegisterEvents()
         local actionType, spellID = GetActionInfo(slot)
         if spellID then
             lastCastSpell = spellID
+
+			-- Test for both ChargeCooldown and ActionbuttonCooldown. If true, then it's out of charges
         end
     end)
 

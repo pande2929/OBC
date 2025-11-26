@@ -70,13 +70,17 @@ local function CreateHighlightFrame()
     highlightFrame.cooldown:SetPoint("TOPLEFT", highlightFrame, "TOPLEFT", 2, -2)
     highlightFrame.cooldown:SetPoint("BOTTOMRIGHT", highlightFrame, "BOTTOMRIGHT", -2, 2)
 
+
+	--GameTooltip:SetOwner(highlightFrame, "ANCHOR_RIGHT")
+
 	-- Tooltip handlers
 	--[[
 	highlightFrame:SetScript("OnEnter", function(self)
-		GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+		--GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
 
 		if ns.recSpellID then
     		GameTooltip:SetSpellByID(ns.recSpellID)
+			--GameTooltip:SetText("TEST", 1, 1, 1, 1)
     		GameTooltip:Show()
 		end
 	end)

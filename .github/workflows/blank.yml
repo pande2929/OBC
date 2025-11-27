@@ -21,4 +21,4 @@ jobs:
 
       # Runs a single command using the runners shell
       - name: Create Git Archive
-        run: git archive --format=zip --output $GITHUB_WORKSPACE/Release/NextUp.zip main
+        run: git archive --format=zip --output ./Release/NextUp.zip main

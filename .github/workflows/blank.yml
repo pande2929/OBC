@@ -11,7 +11,9 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
-      - name: Create Release & Upload dist/index.js
+      - name: Create archive
+        run: git archive --format=zip --output NextUp.zip main
+      - name: Create Release & Upload
         uses: softprops/action-gh-release@v2
         with:
-          files: dist/index.js
+          files: NextUp.zip

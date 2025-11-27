@@ -12,7 +12,7 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
       - name: Create archive
-        run: git archive --format=zip --output ./NextUp.zip
+        run: git archive --format=zip --output ./NextUp.zip main
       - name: Create Release & Upload
         uses: softprops/action-gh-release@v2
         with:

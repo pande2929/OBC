@@ -1,7 +1,7 @@
 # NextUp
 
 ## Overview
-NextUp is a lightweight addon that brings the current ability suggested by the OneButton / Assisted Highlight feature front and center to your view (or wherever you wish it to be).
+NextUp is a lightweight addon that brings the current ability suggested by the OneButton / Assisted Highlight rotation helper feature front and center to your view (or wherever you wish it to be).
 
 For those who like a more trimmed down UI, NextUp can optionally hide action bars.
 

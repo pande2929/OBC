@@ -69,6 +69,7 @@ local function CreateHighlightFrame()
     highlightFrame.cooldown = CreateFrame("Cooldown", "$parentCooldown", highlightFrame, "CooldownFrameTemplate")
     highlightFrame.cooldown:SetPoint("TOPLEFT", highlightFrame, "TOPLEFT", 2, -2)
     highlightFrame.cooldown:SetPoint("BOTTOMRIGHT", highlightFrame, "BOTTOMRIGHT", -2, 2)
+	highlightFrame.cooldown:SetDrawEdge(false)
 
 
 	--GameTooltip:SetOwner(highlightFrame, "ANCHOR_RIGHT")
